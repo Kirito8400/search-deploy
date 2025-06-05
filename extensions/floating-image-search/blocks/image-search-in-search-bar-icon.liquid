@@ -1,86 +1,5 @@
 <div class=" block-{{ block.id }} vs-search-bar-modal" id="vs-search-bar-modal">
   {%- render 'image-search-snippet' -%}
-
-  {% comment %}
-    <div class="vs-search-bar-modal-content">
-      <div class="vs-search-bar-modal-header">
-        <h2>Image Search</h2>
-        <button class="vs-search-bar-modal-close" id="vs-search-bar-modal-close">&times;</button>
-      </div>
-      <div class="vs-search-bar-modal-body">
-        <div class="vs-search-bar-upload-area" id="vs-search-bar-upload-area">
-          <div class="vs-search-bar-upload-icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-          </div>
-          <p>Drag and drop your image here, click "Upload Image," or paste the image here</p>
-          <button class="vs-search-bar-upload-button" id="vs-search-bar-upload-button">Upload Image</button>
-          <input type="file" id="vs-search-bar-file-input" accept="image/*" style="display: none;">
-        </div>
-
-        <div class="vs-search-bar-popular">
-          <h3>Popular Search Product Images</h3>
-          <div class="vs-search-bar-popular-grid">
-            <a href="/products/ballistic-fleece-hoodie" class="vs-search-bar-product-image">
-              <img
-                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-                alt="Ballistic Fleece Hoodie"
-                loading="lazy"
-              >
-            </a>
-            <a href="/products/merino-wool-socks-orange" class="vs-search-bar-product-image">
-              <img
-                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-                alt="Ballistic Fleece Hoodie"
-                loading="lazy"
-              >
-            </a>
-            <a href="/products/merino-wool-socks-green" class="vs-search-bar-product-image">
-              <img
-                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-                alt="Ballistic Fleece Hoodie"
-                loading="lazy"
-              >
-            </a>
-            <a href="/products/merino-wool-socks-multi" class="vs-search-bar-product-image">
-              <img
-                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-                alt="Ballistic Fleece Hoodie"
-                loading="lazy"
-              >
-            </a>
-            <a href="/products/hose-down-shorts" class="vs-search-bar-product-image">
-              <img
-                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-                alt="Ballistic Fleece Hoodie"
-                loading="lazy"
-              >
-            </a>
-            <a href="/products/hybrid-vest" class="vs-search-bar-product-image">
-              <img
-                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-                alt="Ballistic Fleece Hoodie"
-                loading="lazy"
-              >
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endcomment %}
 </div>
 
 <style>
@@ -98,10 +17,7 @@
       // Find all search forms
       const searchForms = document.querySelectorAll('form[action="/search"]');
       const searchBarModal = document.getElementById('vs-search-bar-modal');
-      const searchBarCloseButton = document.getElementById('vs-search-bar-modal-close');
-      const searchBarUploadButton = document.getElementById('vs-search-bar-upload-button');
-      const searchBarFileInput = document.getElementById('vs-search-bar-file-input');
-      const searchBarUploadArea = document.getElementById('vs-search-bar-upload-area');
+      // const searchBarCloseButton = document.getElementById('vs-search-bar-modal-close');
 
       searchForms.forEach((form) => {
         // Create the image search icon
@@ -138,14 +54,13 @@
             imageButton.addEventListener('click', function (e) {
               e.preventDefault();
               searchBarModal.classList.toggle('active');
-              // searchBarModal.style.display = 'block';
             });
           }
 
           // Close modal when close button is clicked
-          searchBarCloseButton.addEventListener('click', function () {
-            searchBarModal.style.display = 'none';
-          });
+          // searchBarCloseButton.addEventListener('click', function () {
+          //   searchBarModal.style.display = 'none';
+          // });
 
           // Close modal when clicking outside the modal content
           // searchBarModal.addEventListener('click', function (event) {
@@ -153,20 +68,6 @@
           //     searchBarModal.style.display = 'none';
           //   }
           // });
-
-          // Trigger file input when upload button is clicked
-          searchBarUploadButton.addEventListener('click', function () {
-            searchBarFileInput.click();
-          });
-
-          // Handle file selection
-          searchBarFileInput.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
-              // Here you would handle the image upload
-              console.log('File selected:', this.files[0]);
-              // You can add code to send the file to your server or process it
-            }
-          });
         }
       });
     }
