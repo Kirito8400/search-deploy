@@ -501,7 +501,7 @@
     background: #ffffff3b;
   }
 
-  .vs-card-image-wrapper{
+  .vs-card-image-wrapper {
     overflow: hidden;
     width: 100%;
     height: auto;
@@ -512,7 +512,7 @@
     transition: 1s linear;
   }
 
-  .vs-card-image-wrapper:hover img{
+  .vs-card-image-wrapper:hover img {
     transition: 1s linear;
     transform: scale(1.06);
   }
@@ -583,6 +583,17 @@
     // Close modal when close button is clicked
     closeButton.addEventListener('click', function () {
       modal.style.display = 'none';
+
+      // Remove Post Image upload styling (dont't remove these)
+      document.querySelector('.vs-image-search-modal-content').classList.remove('after');
+      document.querySelector('.vs-image-search-modal-header').classList.remove('after');
+      document.querySelector('.vs-image-upload-result-wrapper').classList.remove('after');
+      document.querySelector('.vs-image-search-modal-body').classList.remove('after');
+      document.querySelector('.vs-image-search-upload-area').classList.remove('after');
+      document.querySelector('.vs-image-search-results').classList.remove('after');
+      document.querySelector('.vs-image-search-popular').classList.remove('after');
+      // Remove Post Image upload styling ends
+
       // Reset the search results and upload area when closing
       resetUploadArea(); // Use the reset function
     });
@@ -591,6 +602,17 @@
     modal.addEventListener('click', function (event) {
       if (event.target === modal) {
         modal.style.display = 'none';
+
+        // Remove Post Image upload styling (dont't remove these)
+        document.querySelector('.vs-image-search-modal-content').classList.remove('after');
+        document.querySelector('.vs-image-search-modal-header').classList.remove('after');
+        document.querySelector('.vs-image-upload-result-wrapper').classList.remove('after');
+        document.querySelector('.vs-image-search-modal-body').classList.remove('after');
+        document.querySelector('.vs-image-search-upload-area').classList.remove('after');
+        document.querySelector('.vs-image-search-results').classList.remove('after');
+        document.querySelector('.vs-image-search-popular').classList.remove('after');
+        // Remove Post Image upload styling ends
+
         // Reset the search results and upload area when closing
         resetUploadArea(); // Use the reset function
       }
