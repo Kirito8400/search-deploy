@@ -55,6 +55,7 @@ async function findSimilarProducts(base64Image, admin) {
               url
               altText
             }
+            handle
             tags
             productType
           }
@@ -70,7 +71,7 @@ async function findSimilarProducts(base64Image, admin) {
   const rankedProducts = rankProductsBySimilarity(products, imageFeatures);
 
   // Return the top matches (limit to 10)
-  return rankedProducts.slice(0, 10);
+  return rankedProducts.slice(0, 20);
 }
 
 // Extract features from the uploaded image
