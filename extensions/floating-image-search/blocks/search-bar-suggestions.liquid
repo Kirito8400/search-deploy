@@ -4,20 +4,17 @@
       <div class="vs-sg-popular-query">
         <h3>Popular Query</h3>
         <div class="vs-sg-popular-query-grid">
-          <a href="/search?q=Merino+Wool+Socks+Mid+Length" class="vs-sg-query-item">Merino Wool Socks Mid Length</a>
-          <a href="/search?q=Merino+Wool+Socks+Full+Length" class="vs-sg-query-item">Merino Wool Socks Full Length</a>
-          <a href="/search?q=Cotton+Work+Socks+Mid+Length+(Pack+of+3)" class="vs-sg-query-item"
-            >Cotton Work Socks Mid Length (Pack of 3)</a
-          >
-          <a href="/search?q=Hybrid+Vest" class="vs-sg-query-item">Hybrid Vest</a>
-          <a href="/search?q=Hose+Down+T-shirt" class="vs-sg-query-item">Hose Down T-shirt</a>
-          <a href="/search?q=Hose+Down+Shorts" class="vs-sg-query-item">Hose Down Shorts</a>
-          <a href="/search?q=Cotton+Work+Socks+Full+Length+(Pack+of+3)" class="vs-sg-query-item"
-            >Cotton Work Socks Full Length (Pack of 3)</a
-          >
-          <a href="/search?q=Monsoon+Nunatak+Smock" class="vs-sg-query-item">Monsoon Nunatak Smock</a>
-          <a href="/search?q=Baseline+Pull-on+Zip+Top" class="vs-sg-query-item">Baseline Pull-on Zip Top</a>
-          <a href="/search?q=Ballistic+Fleece+Hoodie" class="vs-sg-query-item">Ballistic Fleece Hoodie</a>
+          <span class="vs-sg-query-item">Merino Wool Socks</span>
+          <span class="vs-sg-query-item">Merino Wool Socks Mid Length</span>
+          <span class="vs-sg-query-item">Merino Wool Socks Full Length</span>
+          <span class="vs-sg-query-item">Cotton Work Socks Mid Length (Pack of 3)</span>
+          <span class="vs-sg-query-item">Hybrid Vest</span>
+          <span class="vs-sg-query-item">Hose Down T-shirt</span>
+          <span class="vs-sg-query-item">Hose Down Shorts</span>
+          <span class="vs-sg-query-item">Cotton Work Socks Full Length (Pack of 3)</span>
+          <span class="vs-sg-query-item">Monsoon Nunatak Smock</span>
+          <span class="vs-sg-query-item">Baseline Pull-on Zip Top</span>
+          <span class="vs-sg-query-item">Ballistic Fleece Hoodie</span>
         </div>
       </div>
 
@@ -165,7 +162,7 @@
 
     // Clone the suggestions wrapper for each search form
     searchForms.forEach((form) => {
-      // Clone the suggestions wrapper
+      // Clone the suggestions wrapper 
       const clonedSuggestions = suggestionsWrapper.cloneNode(true);
 
       // Append it to the form - it will be visible by default
@@ -181,6 +178,7 @@
         const popularQuery = clonedSuggestions.querySelector('.vs-sg-popular-query');
         const popularProducts = clonedSuggestions.querySelector('.vs-sg-popular-search-products');
         const popularProductsGrid = clonedSuggestions.querySelector('.vs-sg-popular-products-grid'); // Get the popular products grid
+        const popularQueryItems = clonedSuggestions.querySelectorAll('.vs-sg-query-item'); // Get the popular query items
 
         // Set up debounce function for search
         let searchTimeout;
@@ -280,7 +278,33 @@
                   });
                 }
               }
-            }); 
+            });
+          });
+        }
+
+        // Add click listeners to popular query items
+        if (popularQueryItems.length > 0) {
+          popularQueryItems.forEach((item) => {
+            item.addEventListener('click', function () {
+              console.log('hiiiiiiiiiii')
+              
+              const query = this.textContent.trim();
+              if (query) {
+                // Set the search input value
+                searchInput.value = query;
+
+                // Manually dispatch an input event to trigger the listener
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+                // Trigger the search immediately (or let the input event listener handle debounce)
+                // We can remove the direct call to fetchSearchResults here
+                clearTimeout(searchTimeout); // Clear any pending input search
+                dynamicSearchResults.style.display = 'block';
+                popularQuery.style.display = 'none';
+                popularProducts.style.display = 'none';
+                fetchSearchResults(query, dynamicProductsGrid);
+              }
+            });
           });
         }
       }
@@ -382,7 +406,7 @@
       if (!isClickInside) {
         // suggestionsWrapper.style.display = 'none';
         console.log("cliked outsideeee");
-        
+
         // Remove Post Image upload styling (dont't remove these)
         document.querySelector('.vs-snp-image-search-modal-content').classList.remove('after');
         document.querySelector('.vs-snp-image-search-modal-header').classList.remove('after');
