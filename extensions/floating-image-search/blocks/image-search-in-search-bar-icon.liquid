@@ -6,9 +6,13 @@
   .vs-search-bar-modal.active {
     display: block !important;
   }
+  .vs-snp-image-search-error {
+    z-index: 9;
+    box-shadow: 2px 2px; 
+  }
 </style>
 
-<script>
+<script>  
   document.addEventListener('DOMContentLoaded', function () {
     // Inject image search icon into search bar
     injectImageSearchIcon();

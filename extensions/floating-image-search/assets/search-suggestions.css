@@ -96,7 +96,7 @@ form[action="/search"] .vs-sg-search-suggestions-wrapper {
   margin-top: 5px;
   display: block; /* Ensure it's always displayed */
   position: absolute;
-  /* z-index: 3647873293; */
+  z-index: 9999999999;
   left: 0;
   right: 0;
 }
