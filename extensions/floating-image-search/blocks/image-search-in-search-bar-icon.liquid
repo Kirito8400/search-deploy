@@ -8,11 +8,11 @@
   }
   .vs-snp-image-search-error {
     z-index: 9;
-    box-shadow: 2px 2px; 
+    box-shadow: 2px 2px;
   }
 </style>
 
-<script>  
+<script>
   document.addEventListener('DOMContentLoaded', function () {
     // Inject image search icon into search bar
     injectImageSearchIcon();
@@ -60,23 +60,39 @@
               searchBarModal.classList.toggle('active');
             });
           }
-
-          // Close modal when close button is clicked
-          // searchBarCloseButton.addEventListener('click', function () {
-          //   searchBarModal.style.display = 'none';
-          // });
-
-          // Close modal when clicking outside the modal content
-          // searchBarModal.addEventListener('click', function (event) {
-          //   if (event.target === searchBarModal) {
-          //     searchBarModal.style.display = 'none';
-          //   }
-          // });
         }
       });
     }
   });
+
+  // when vs-search-bar-image-button button clicked, toggle visiblity of '.vs-sg-search-suggestions-wrapper'
+  document.addEventListener('DOMContentLoaded', function () {
+    // Ensure the DOM is fully loaded before querying elements
+    const imageButton = document.querySelector('.vs-search-bar-image-button');
+
+    if (imageButton) {
+      imageButton.addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent any default behavior
+        console.log('Image search button clicked');
+
+        // Toggle visibility of the suggestions wrapper
+        const searchBarSuggestionModal = document.querySelector('form[action="/search"] .vs-sg-search-suggestions-wrapper');
+        searchBarSuggestionModal.classList.toggle('zbellow');
+      });
+    } else {
+      console.error('Element with class ".vs-search-bar-image-button" not found.');
+    }
+  });
 </script>
+
+<style>
+  .vs-sg-search-suggestions-wrapper {
+    visibility: visible;
+  }
+  .zbellow  {
+    z-index: 0 !important;
+  }
+</style>
 
 {% schema %}
 {

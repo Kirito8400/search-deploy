@@ -1,4 +1,4 @@
-<section class=" block-{{ block.id }} vs-sg-search-suggestions-wrapper">
+<section class="block-{{ block.id }} vs-sg-search-suggestions-wrapper">
   <div class="vs-sg-search-suggestions">
     <div class="vs-sg-search-suggestions-container">
       <div class="vs-sg-popular-query">
@@ -25,6 +25,8 @@
             <img
               src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
               alt="Merino Wool Socks Orange"
+              width=""
+              height=""
               loading="lazy"
             >
           </a>
@@ -33,12 +35,16 @@
               src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
               alt="Merino Wool Socks Orange"
               loading="lazy"
+              width=""
+              height=""
             >
           </a>
           <a href="/products/merino-wool-socks-multi" class="vs-sg-product-image">
             <img
               src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
               alt="Merino Wool Socks Orange"
+              width=""
+              height=""
               loading="lazy"
             >
           </a>
@@ -46,6 +52,8 @@
             <img
               src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
               alt="Merino Wool Socks Orange"
+              width=""
+              height=""
               loading="lazy"
             >
           </a>
@@ -53,6 +61,8 @@
             <img
               src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
               alt="Merino Wool Socks Orange"
+              width=""
+              height=""
               loading="lazy"
             >
           </a>
@@ -61,6 +71,8 @@
               src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
               alt="Merino Wool Socks Orange"
               loading="lazy"
+              width=""
+              height=""
             >
           </a>
         </div>
@@ -93,8 +105,6 @@
       </div>
     </div>
   </div>
-
-  {% comment %} {% render 'image-search-snippet' %} {% endcomment %}
 </section>
 
 <style>
@@ -154,165 +164,253 @@
 {% endschema %}
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function() {
+    // Constants and configuration
+    const CONFIG = {
+      searchDelay: {{ block.settings.search_delay | default: 300 }},
+      enableDynamicSearch: {{ block.settings.enable_dynamic_search | default: true }},
+      showPopularQueries: {{ block.settings.show_popular_queries | default: true }},
+      showPopularProducts: {{ block.settings.show_popular_products | default: true }},
+      maxSearchResults: 6,
+      placeholderImage: 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png'
+    };
+
+    // DOM Elements
     const suggestionsWrapper = document.querySelector('.vs-sg-search-suggestions-wrapper');
     const searchForms = document.querySelectorAll('header form[action="/search"]');
 
     if (!suggestionsWrapper || searchForms.length === 0) return;
 
-    // Clone the suggestions wrapper for each search form
-    searchForms.forEach((form) => {
-      // Clone the suggestions wrapper 
-      const clonedSuggestions = suggestionsWrapper.cloneNode(true);
+    // Add CSS for spinner and search results
+    addStyles();
 
-      // Append it to the form - it will be visible by default
+    // Initialize search suggestions for each search form
+    searchForms.forEach(form => initializeSearchSuggestions(form));
+
+    // Remove the original template element after cloning
+    suggestionsWrapper.remove();
+
+    // Add global document click handler
+    setupGlobalClickHandler();
+
+    /**
+     * Initialize search suggestions for a specific search form
+     * @param {HTMLElement} form - The search form element
+     */
+    function initializeSearchSuggestions(form) {
+      // Clone the suggestions wrapper
+      const clonedSuggestions = suggestionsWrapper.cloneNode(true);
       form.appendChild(clonedSuggestions);
 
       // Find search input within this form
       const searchInput = form.querySelector('input[type="search"], [name="q"], .search-input, .search__input');
+      if (!searchInput) return;
 
-      if (searchInput) {
-        // Get dynamic search elements
-        const dynamicSearchResults = clonedSuggestions.querySelector('.vs-sg-dynamic-search-results');
-        const dynamicProductsGrid = clonedSuggestions.querySelector('.vs-sg-dynamic-products-grid');
-        const popularQuery = clonedSuggestions.querySelector('.vs-sg-popular-query');
-        const popularProducts = clonedSuggestions.querySelector('.vs-sg-popular-search-products');
-        const popularProductsGrid = clonedSuggestions.querySelector('.vs-sg-popular-products-grid'); // Get the popular products grid
-        const popularQueryItems = clonedSuggestions.querySelectorAll('.vs-sg-query-item'); // Get the popular query items
+      // Get UI elements
+      const elements = {
+        dynamicSearchResults: clonedSuggestions.querySelector('.vs-sg-dynamic-search-results'),
+        dynamicProductsGrid: clonedSuggestions.querySelector('.vs-sg-dynamic-products-grid'),
+        popularQuery: clonedSuggestions.querySelector('.vs-sg-popular-query'),
+        popularProducts: clonedSuggestions.querySelector('.vs-sg-popular-search-products'),
+        popularProductsGrid: clonedSuggestions.querySelector('.vs-sg-popular-products-grid'),
+        popularQueryItems: clonedSuggestions.querySelectorAll('.vs-sg-query-item')
+      };
 
-        // Set up debounce function for search
-        let searchTimeout;
-        const searchDelay = 300; // milliseconds
+      // Set up debounce for search
+      let searchTimeout;
 
-        // Add input event listener for dynamic search
-        searchInput.addEventListener('input', function () {
-          const query = this.value.trim();
+      // Add event listeners
+      setupSearchInputListener(searchInput, elements, searchTimeout);
+      setupFormSubmitListener(form, searchInput, clonedSuggestions);
+      setupPopularProductsListener(elements.popularProductsGrid, form, clonedSuggestions);
+      setupPopularQueriesListener(elements.popularQueryItems, searchInput, elements, searchTimeout);
+    }
 
-          // Clear previous timeout
-          clearTimeout(searchTimeout);
+    /**
+     * Set up the search input listener for dynamic search
+     */
+    function setupSearchInputListener(searchInput, elements, searchTimeout) {
+      searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        clearTimeout(searchTimeout);
 
-          if (query.length > 0) {
-            // Show loading state
-            dynamicSearchResults.style.display = 'block';
-            popularQuery.style.display = 'none';
-            popularProducts.style.display = 'none';
+        if (query.length > 0) {
+          // Show search results, hide popular sections
+          toggleVisibility(elements, true);
 
-            // Set timeout for debounce
-            searchTimeout = setTimeout(() => {
-              fetchSearchResults(query, dynamicProductsGrid);
-            }, searchDelay);
-          } else {
-            // Show default content when query is too short
-            dynamicSearchResults.style.display = 'none';
-            popularQuery.style.display = 'block';
-            popularProducts.style.display = 'block';
-          }
-        });
-
-        // Hide suggestions when search input has value and is submitted
-        form.addEventListener('submit', function (e) {
-          if (searchInput.value.trim()) {
-            // Only hide if there's actual search text
-            clonedSuggestions.style.display = 'none';
-          }
-        });
-
-        // Add click listeners to popular product images
-        if (popularProductsGrid) {
-          const popularImageLinks = popularProductsGrid.querySelectorAll('.vs-sg-product-image');
-          popularImageLinks.forEach((link) => {
-            link.addEventListener('click', function (e) {
-              e.preventDefault(); // Prevent default link navigation
-
-              const imageUrl = this.querySelector('img').src;
-              if (imageUrl) {
-                // Find the image search modal and file input within the form
-                const imageSearchModal = form.querySelector('#vs-search-bar-modal');
-                const fileInput = imageSearchModal
-                  ? imageSearchModal.querySelector('#vs-snp-image-search-file-input')
-                  : null;
-
-                if (imageSearchModal && fileInput) {
-                  // Open the image search modal
-                  imageSearchModal.classList.add('active');
-
-                  // Fetch the image and trigger the file input change event
-                  fetch(imageUrl)
-                    .then((response) => response.blob())
-                    .then((blob) => {
-                      // Create a File object from the blob
-                      const file = new File([blob], 'popular-image.jpg', { type: blob.type });
-
-                      // Assign the file to the file input and trigger the change event
-                      // This will trigger the processImage function in the image search snippet
-                      const dataTransfer = new DataTransfer();
-                      dataTransfer.items.add(file);
-                      fileInput.files = dataTransfer.files;
-                      fileInput.dispatchEvent(new Event('change', { bubbles: true }));
-
-                      // Hide the search suggestions wrapper
-                      clonedSuggestions.style.display = 'none';
-                    })
-                    .catch((error) => {
-                      console.error('Error fetching popular image for search:', error);
-                      // Optionally display an error message in the image search modal
-                    });
-                } else {
-                  console.error('Image search modal or file input not found.');
-                }
-
-                // Add event listener to hide the modal when clicking outside
-                if (imageSearchModal) {
-                  imageSearchModal.addEventListener('click', function (event) {
-                    // Check if the click target is the modal itself (the overlay)
-                    if (event.target === imageSearchModal) {
-                      imageSearchModal.classList.remove('active');
-                      document.querySelector('.vs-snp-image-upload-result-wrapper').forEach((wrapper) => {
-                        // wrapper.style.display = 'none';
-                        console.log('cliked outside')
-                        wrapper.classList.remove('after');
-                      });
-                      // Optionally reset the modal content here if needed
-                      // e.g., clear preview, results, errors
-                    }
-                  });
-                }
-              }
-            });
-          });
+          // Debounce search
+          searchTimeout = setTimeout(() => {
+            fetchSearchResults(query, elements.dynamicProductsGrid);
+          }, CONFIG.searchDelay);
+        } else {
+          // Show popular sections, hide search results
+          toggleVisibility(elements, false);
         }
+      });
+    }
 
-        // Add click listeners to popular query items
-        if (popularQueryItems.length > 0) {
-          popularQueryItems.forEach((item) => {
-            item.addEventListener('click', function () {
-              console.log('hiiiiiiiiiii')
-              
-              const query = this.textContent.trim();
-              if (query) {
-                // Set the search input value
-                searchInput.value = query;
+    /**
+     * Toggle visibility of search UI elements
+     * @param {Object} elements - UI elements object
+     * @param {boolean} isSearchActive - Whether search is active
+     */
+    function toggleVisibility(elements, isSearchActive) {
+      elements.dynamicSearchResults.style.display = isSearchActive ? 'block' : 'none';
+      elements.popularQuery.style.display = isSearchActive ? 'none' : 'block';
+      elements.popularProducts.style.display = isSearchActive ? 'none' : 'block';
+    }
 
-                // Manually dispatch an input event to trigger the listener
-                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-                // Trigger the search immediately (or let the input event listener handle debounce)
-                // We can remove the direct call to fetchSearchResults here
-                clearTimeout(searchTimeout); // Clear any pending input search
-                dynamicSearchResults.style.display = 'block';
-                popularQuery.style.display = 'none';
-                popularProducts.style.display = 'none';
-                fetchSearchResults(query, dynamicProductsGrid);
-              }
-            });
-          });
+    /**
+     * Set up form submit listener
+     */
+    function setupFormSubmitListener(form, searchInput, clonedSuggestions) {
+      form.addEventListener('submit', function(e) {
+        if (searchInput.value.trim()) {
+          clonedSuggestions.style.display = 'none';
         }
+      });
+    }
+
+    /**
+     * Set up popular products click listeners
+     */
+    function setupPopularProductsListener(popularProductsGrid, form, clonedSuggestions) {
+      if (!popularProductsGrid) return;
+
+      const popularImageLinks = popularProductsGrid.querySelectorAll('.vs-sg-product-image');
+      popularImageLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const imageUrl = this.querySelector('img').src;
+          if (!imageUrl) return;
+
+          handlePopularImageClick(imageUrl, form, clonedSuggestions);
+        });
+      });
+    }
+
+    /**
+     * Handle click on popular image
+     */
+    function handlePopularImageClick(imageUrl, form, clonedSuggestions) {
+      const imageSearchModal = form.querySelector('#vs-search-bar-modal');
+      const fileInput = imageSearchModal ? imageSearchModal.querySelector('#vs-snp-image-search-file-input') : null;
+
+      if (!imageSearchModal || !fileInput) {
+        console.error('Image search modal or file input not found.');
+        return;
       }
-    });
 
-    // Function to fetch search results
+      // Open the image search modal
+      imageSearchModal.classList.add('active');
+
+      // Set up modal close on outside click
+      setupModalCloseListener(imageSearchModal);
+
+      // Fetch and process the image
+      fetchAndProcessImage(imageUrl, fileInput, clonedSuggestions);
+    }
+
+    /**
+     * Set up modal close listener
+     */
+    function setupModalCloseListener(imageSearchModal) {
+      imageSearchModal.addEventListener('click', function(event) {
+        if (event.target !== imageSearchModal) return;
+        
+        imageSearchModal.classList.remove('active');
+        
+        // Reset UI elements
+        const wrappers = document.querySelectorAll('.vs-snp-image-upload-result-wrapper');
+        wrappers.forEach(wrapper => {
+          wrapper.classList.remove('after');
+        });
+      });
+    }
+
+    /**
+     * Fetch and process image for search
+     */
+    function fetchAndProcessImage(imageUrl, fileInput, clonedSuggestions) {
+      fetch(imageUrl)
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to fetch image');
+          return response.blob();
+        })
+        .then(blob => {
+          // Create a File object from the blob
+          const file = new File([blob], 'popular-image.jpg', { type: blob.type });
+
+          // Trigger file input change
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInput.files = dataTransfer.files;
+          fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+          // Hide suggestions
+          clonedSuggestions.style.display = 'none';
+        })
+        .catch(error => {
+          console.error('Error fetching popular image for search:', error);
+        });
+    }
+
+    /**
+     * Set up popular queries click listeners
+     */
+    function setupPopularQueriesListener(popularQueryItems, searchInput, elements, searchTimeout) {
+      if (!popularQueryItems || popularQueryItems.length === 0) return;
+
+      popularQueryItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const query = this.textContent.trim();
+          if (!query) return;
+
+          // Set search input value and trigger search
+          searchInput.value = query;
+          searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+          // Immediately search without waiting for debounce
+          clearTimeout(searchTimeout);
+          toggleVisibility(elements, true);
+          fetchSearchResults(query, elements.dynamicProductsGrid);
+        });
+      });
+    }
+
+    /**
+     * Fetch search results from Shopify Predictive Search API
+     * @param {string} query - Search query
+     * @param {HTMLElement} resultsContainer - Container for results
+     */
     function fetchSearchResults(query, resultsContainer) {
       // Show loading state
+      showLoadingState(resultsContainer);
+
+      // Fetch products from Shopify Predictive Search API
+      fetch(`/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product`)
+        .then(response => {
+          if (!response.ok) throw new Error('Search request failed');
+          return response.json();
+        })
+        .then(data => {
+          // Hide image search modal if present
+          const imageSearchModal = document.querySelector('.vs-snp-image-search-modal');
+          if (imageSearchModal) imageSearchModal.style.display = 'none';
+
+          // Process and display results
+          displaySearchResults(data, resultsContainer);
+        })
+        .catch(error => {
+          console.error('Error fetching search results:', error);
+          resultsContainer.innerHTML = '<p class="vs-sg-error">Error loading search results. Please try again.</p>';
+        });
+    }
+
+    /**
+     * Show loading state in results container
+     */
+    function showLoadingState(resultsContainer) {
       resultsContainer.innerHTML = `
         <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
@@ -322,111 +420,136 @@
           <p>Searching products...</p>
         </div>
       `;
-
-      // Fetch products from Shopify Predictive Search API
-      fetch(`/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product`)
-        .then((response) => response.json())
-        .then((data) => {
-
-        // hide the seach wrapper
-        document.querySelector('.vs-snp-image-search-modal').style.display = 'none';
-
-          // Process search results
-          const products = data.resources.results.products || [];
-
-          if (products.length > 0) {
-            // Build HTML for products
-            let productsHTML = '';
-
-            products.slice(0, 6).forEach((product) => {
-              productsHTML += `
-                <a href="${product.url}" class="vs-sg-product-image">
-                  <img src="${
-                    product.image ||
-                    'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png'
-                  }" alt="${product.title}" loading="lazy">
-                  <div class="vs-content-wrapper">
-                    <div class="vs-sg-product-title">${product.title}</div>
-                    <div class="vs-sg-product-price">${product.price}</div>
-                  </div>
-                </a>
-              `;
-            });
-
-            resultsContainer.innerHTML = productsHTML;
-          } else {
-            // No results found
-            resultsContainer.innerHTML =
-              '<p class="vs-sg-no-results">No products found. Try a different search term.</p>';
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching search results:', error);
-          resultsContainer.innerHTML = '<p class="vs-sg-error">Error loading search results. Please try again.</p>';
-        });
     }
 
-    // Add CSS for spinner animation
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes vs-sg-spin {
-        to { transform: rotate(360deg); }
-      }
-      .vs-sg-spinner {
-        animation: vs-sg-spin 1s linear infinite;
-      }
-      .vs-sg-product-title {
-        margin-top: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .vs-sg-product-price {
-        font-size: 13px;
-        color: #555;
-        margin-top: 4px;
-      }
-      .vs-sg-no-results, .vs-sg-error {
-        text-align: center;
-        padding: 20px;
-        color: #555;
-      }
-    `;
-    document.head.appendChild(style);
+    /**
+     * Display search results
+     */
+    function displaySearchResults(data, resultsContainer) {
+      const products = data.resources?.results?.products || [];
 
-    // Remove the original template element
-    suggestionsWrapper.remove();
-    document.addEventListener('click', function (e) {
-      e.stopPropagation();
-      const isClickInside = suggestionsWrapper.contains(e.target);
-      const isbarImageModel = document.querySelector('.vs-snp-image-search-modal');
-      console.log('cliked outside')
-      if (!isClickInside) {
-        // suggestionsWrapper.style.display = 'none';
-        console.log("cliked outsideeee");
+      if (products.length > 0) {
+        // Build HTML for products
+        let productsHTML = '';
 
-        // Remove Post Image upload styling (dont't remove these)
-        document.querySelector('.vs-snp-image-search-modal-content').classList.remove('after');
-        document.querySelector('.vs-snp-image-search-modal-header').classList.remove('after');
-        document.querySelector('.vs-snp-image-upload-result-wrapper').classList.remove('after');
-        document.querySelector('.vs-snp-image-search-modal-body').classList.remove('after');
-        document.querySelector('.vs-snp-image-search-upload-area').classList.remove('after');
-        document.querySelector('.vs-snp-image-search-results').classList.remove('after');
-        document.querySelector('.vs-snp-image-search-popular').classList.remove('after');
-        document.querySelector('.vs-snp-image-search-upload-area').classList.remove('has-content');
-        document.querySelector('.vs-snp-upload-another-button').style.display = 'none';
-        // if(!isbarImageModel){
-        //   document.querySelector('.vs-search-bar-modal').classList.remove('active')
-        // }
-        document.querySelector('form[action="/search"] .vs-sg-search-suggestions-wrapper').style.display = 'block';
+        products.slice(0, CONFIG.maxSearchResults).forEach(product => {
+          productsHTML += createProductHTML(product);
+        });
 
-        document.querySelector('.vs-sg-dynamic-search-results').style.display = 'none';
-        document.querySelector('.vs-sg-popular-search-products').style.display = 'block';
-        document.querySelector('.vs-sg-popular-query').style.display = 'block';
-        // Remove Post Image upload styling ends
+        resultsContainer.innerHTML = productsHTML;
+      } else {
+        // No results found
+        resultsContainer.innerHTML = '<p class="vs-sg-no-results">No products found. Try a different search term.</p>';
       }
-    });
+    }
+
+    /**
+     * Create HTML for a single product
+     */
+    function createProductHTML(product) {
+      return `
+        <a href="${product.url}" class="vs-sg-product-image">
+          <img src="${product.image || CONFIG.placeholderImage}" alt="${product.title}" loading="lazy">
+          <div class="vs-content-wrapper">
+            <div class="vs-sg-product-title">${product.title}</div>
+            <div class="vs-sg-product-price">${product.price}</div>
+          </div>
+        </a>
+      `;
+    }
+
+    /**
+     * Add CSS styles for spinner and search results
+     */
+    function addStyles() {
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes vs-sg-spin {
+          to { transform: rotate(360deg); }
+        }
+        .vs-sg-spinner {
+          animation: vs-sg-spin 1s linear infinite;
+        }
+        .vs-sg-product-title {
+          margin-top: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .vs-sg-product-price {
+          font-size: 13px;
+          color: #555;
+          margin-top: 4px;
+        }
+        .vs-sg-no-results, .vs-sg-error {
+          text-align: center;
+          padding: 20px;
+          color: #555;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    /**
+     * Set up global document click handler
+     */
+    function setupGlobalClickHandler() {
+      document.addEventListener('click', function(e) {
+        e.stopPropagation();
+        
+        // Check if click is inside suggestions
+        const isClickInside = e.target.closest('.vs-sg-search-suggestions-wrapper');
+        
+        if (!isClickInside) {
+          // Reset UI elements
+          resetUIElements();
+          
+          // Show search suggestions wrapper
+          const searchSuggestionsWrapper = document.querySelector('form[action="/search"] .vs-sg-search-suggestions-wrapper');
+          if (searchSuggestionsWrapper) {
+            searchSuggestionsWrapper.style.display = 'block';
+            
+            // Reset visibility of sections
+            const dynamicResults = searchSuggestionsWrapper.querySelector('.vs-sg-dynamic-search-results');
+            const popularProducts = searchSuggestionsWrapper.querySelector('.vs-sg-popular-search-products');
+            const popularQuery = searchSuggestionsWrapper.querySelector('.vs-sg-popular-query');
+            
+            if (dynamicResults) dynamicResults.style.display = 'none';
+            if (popularProducts) popularProducts.style.display = 'block';
+            if (popularQuery) popularQuery.style.display = 'block';
+          }
+        }
+      });
+    }
+
+    /**
+     * Reset UI elements after clicking outside
+     */
+    function resetUIElements() {
+      // Remove post-image upload styling
+      const elements = [
+        '.vs-snp-image-search-modal-content',
+        '.vs-snp-image-search-modal-header',
+        '.vs-snp-image-upload-result-wrapper',
+        '.vs-snp-image-search-modal-body',
+        '.vs-snp-image-search-upload-area',
+        '.vs-snp-image-search-results',
+        '.vs-snp-image-search-popular'
+      ];
+      
+      elements.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) element.classList.remove('after');
+      });
+      
+      // Additional resets
+      const uploadArea = document.querySelector('.vs-snp-image-search-upload-area');
+      if (uploadArea) uploadArea.classList.remove('has-content');
+      
+      const uploadButton = document.querySelector('.vs-snp-upload-another-button');
+      if (uploadButton) uploadButton.style.display = 'none';
+    }
   });
 </script>
