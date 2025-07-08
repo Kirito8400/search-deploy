@@ -1,7 +1,9 @@
-<link
-  href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
-  rel="stylesheet"
->
+{% comment %}
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet"
+  >
+{% endcomment %}
 
 <!-- Add the following styles for the modal -->
 <style>
@@ -84,7 +86,7 @@
     font-size: 18px;
     font-weight: 500;
     /* text-transform: uppercase; */
-    font-family: 'Nunito' !important;
+    /* font-family: 'Nunito' !important; */
   }
 
   .vs-snp-image-search-close {
@@ -143,9 +145,15 @@
   .vs-snp-image-search-popular-grid img {
     width: 100%;
     height: auto;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
-    border: 1px solid #eee;
+    aspect-ratio: 2/2.4;
+    object-fit: cover;
+  }
+
+  .vs-snp-image-search-popular-grid img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
 
   .vs-snp-image-search-popular {
@@ -208,7 +216,14 @@
             </div>
             <div class="vs-snp-image-preview-wrapper" style="position: relative;">
               <div class="">
-                <img id="vs-snp-image-preview" class="vs-snp-image-preview" style="display: none;" alt="Image preview"  width="" height="">
+                <img
+                  id="vs-snp-image-preview"
+                  class="vs-snp-image-preview"
+                  style="display: none;"
+                  alt="Image preview"
+                  width=""
+                  height=""
+                >
                 <div class="vs-snp-svg-wrapper" style="position: absolute;">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +252,9 @@
               </div>
             </div>
             <p>Drag and drop your image here, click "Upload Image," or paste the image here</p>
-            <button class="vs-snp-image-search-upload-button" id="vs-snp-image-search-upload-button">Upload Image</button>
+            <button class="vs-snp-image-search-upload-button" id="vs-snp-image-search-upload-button">
+              Upload Image
+            </button>
             <input type="file" id="vs-snp-image-search-file-input" accept="image/*" style="display: none;">
             <!-- New button to upload another image -->
             <button class="vs-snp-upload-another-button" id="vs-snp-upload-another-button" style="display: none;">
@@ -252,7 +269,11 @@
               <!-- Results will be dynamically added here -->
             </div>
             <!-- Skeleton loader container -->
-            <div class="vs-snp-image-search-skeleton-grid" id="vs-snp-image-search-skeleton-grid" style="display: none;">
+            <div
+              class="vs-snp-image-search-skeleton-grid"
+              id="vs-snp-image-search-skeleton-grid"
+              style="display: none;"
+            >
               <!-- Skeleton items will be dynamically added here -->
             </div>
           </div>
@@ -312,25 +333,6 @@
 <style>
   /* Existing styles would be here */
 
-  .vs-snp-image-search-float {
-    font-family: 'Nunito' !important;
-  }
-  .vs-snp-image-search-float h1,
-  .vs-snp-image-search-float h2,
-  .vs-snp-image-search-float h3,
-  .vs-snp-image-search-float h4,
-  .vs-snp-image-search-float h5,
-  .vs-snp-image-search-float h6,
-  .vs-snp-image-search-float p,
-  .vs-snp-image-search-float span,
-  .vs-snp-image-search-float button,
-  .vs-snp-image-search-float input,
-  .vs-snp-image-search-float label,
-  .vs-snp-image-search-float a,
-  .vs-snp-image-search-float select {
-    font-family: 'Nunito' !important;
-  }
-
   /* Add styles for results grid */
   .vs-snp-image-search-results-grid,
   .vs-snp-image-search-skeleton-grid /* Apply grid styles to skeleton grid too */ {
@@ -338,7 +340,6 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
     margin-top: 20px;
-    font-family: 'Nunito' !important;
   }
 
   .vs-snp-image-search-product-card {
@@ -440,17 +441,6 @@
   .vs-snp-image-search-error p {
     margin: 6px;
     font-size: 14px;
-  }
-
-  .vs-snp-image-search-popular-grid img {
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border-radius: 8px;
-  }
-
-  .vs-snp-image-search-popular-grid img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
 
   .vs-snp-image-search-results-grid,

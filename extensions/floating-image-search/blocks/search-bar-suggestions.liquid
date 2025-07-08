@@ -80,10 +80,10 @@
 
       <!-- Dynamic search results section -->
       <div class="vs-sg-dynamic-search-results" style="display: none;">
-        <h3>Search Results</h3>
+        <h3>Products</h3>
         <div class="vs-sg-dynamic-products-grid">
           <!-- Dynamic products will be loaded here -->
-          <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
+          <div class="vs-sg-loading" style="text-align: center; display: block; padding: 20px;">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -103,6 +103,16 @@
           </div>
         </div>
       </div>
+
+      {% comment %} <div class="">
+        <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+          <p>Searching products...</p>
+        </div>
+      </div> {% endcomment %}
     </div>
   </div>
 </section>
@@ -385,7 +395,7 @@
      */
     function fetchSearchResults(query, resultsContainer) {
       // Show loading state
-      showLoadingState(resultsContainer);
+      // showLoadingState(resultsContainer);
 
       // Fetch products from Shopify Predictive Search API
       fetch(`/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product`)
@@ -410,17 +420,17 @@
     /**
      * Show loading state in results container
      */
-    function showLoadingState(resultsContainer) {
-      resultsContainer.innerHTML = `
-        <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M12 6v6l4 2"></path>
-          </svg>
-          <p>Searching products...</p>
-        </div>
-      `;
-    }
+    // function showLoadingState(resultsContainer) {
+    //   resultsContainer.innerHTML = `
+    //     <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
+    //       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
+    //         <circle cx="12" cy="12" r="10"></circle>
+    //         <path d="M12 6v6l4 2"></path>
+    //       </svg>
+    //       <p>Searching products...</p>
+    //     </div>
+    //   `;
+    // }
 
     /**
      * Display search results
@@ -449,7 +459,7 @@
     function createProductHTML(product) {
       return `
         <a href="${product.url}" class="vs-sg-product-image">
-          <img src="${product.image || CONFIG.placeholderImage}" alt="${product.title}" loading="lazy">
+          <img src="${product.image || CONFIG.placeholderImage}" alt="${product.title}" loading="lazy" style="width: 6rem !important;">
           <div class="vs-content-wrapper">
             <div class="vs-sg-product-title">${product.title}</div>
             <div class="vs-sg-product-price">${product.price}</div>

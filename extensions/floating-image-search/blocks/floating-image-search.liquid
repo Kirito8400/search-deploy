@@ -25,16 +25,16 @@
   </button>
 
   <div class="vs-image-search-modal" id="vs-image-search-modal">
-    <div class="vs-image-search-modal-content"> 
+    <div class="vs-image-search-modal-content">
       <div class="vs-image-search-modal-header">
         <h2>Image Search</h2>
         <button class="vs-image-search-close" id="vs-image-search-close">&times;</button>
       </div>
       <div class="vs-image-search-modal-body">
         <!-- Add error message container -->
-        <div class="vs-image-search-error" id="vs-image-search-error" style="display: none;">
+        {% comment %} <div class="vs-image-search-error" id="vs-image-search-error" style="display: none;">
           <p>Error searching for products. Please try again.</p>
-        </div>
+        </div> {% endcomment %}
 
         <!-- Add loading indicator -->
         <div class="vs-image-search-loading" id="vs-image-search-loading" style="display: none;">
@@ -94,6 +94,12 @@
             <div class="vs-image-search-results-grid" id="vs-image-search-results-grid">
               <!-- Results will be dynamically added here -->
             </div>
+            <div class="" style="width: 100%;">
+              <!-- Add error message container -->
+              <div class="vs-image-search-error" id="vs-image-search-error" style="display: none;">
+                <p>Error searching for products. Please try again.</p>
+              </div>
+            </div>
             <!-- Skeleton loader container -->
             <div class="vs-image-search-skeleton-grid" id="vs-image-search-skeleton-grid" style="display: none;">
               <!-- Skeleton items will be dynamically added here -->
@@ -151,7 +157,6 @@
     </div>
   </div>
 </section>
-
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
