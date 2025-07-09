@@ -32,9 +32,11 @@
       </div>
       <div class="vs-image-search-modal-body">
         <!-- Add error message container -->
-        {% comment %} <div class="vs-image-search-error" id="vs-image-search-error" style="display: none;">
-          <p>Error searching for products. Please try again.</p>
-        </div> {% endcomment %}
+        {% comment %}
+          <div class="vs-image-search-error" id="vs-image-search-error" style="display: none;">
+            <p>Error searching for products. Please try again.</p>
+          </div>
+        {% endcomment %}
 
         <!-- Add loading indicator -->
         <div class="vs-image-search-loading" id="vs-image-search-loading" style="display: none;">
@@ -513,7 +515,8 @@
     position: sticky;
     top: 0;
     align-self: flex-start;
-    width: 33%;
+    width: auto;
+    max-width: 30rem;
     display: flex;
     flex-direction: column;
     justify-content: center; /* Center vertically */
@@ -524,6 +527,14 @@
   }
   .vs-image-search-popular.after {
     display: none;
+  }
+
+  @media (max-width: 1040px) {
+    .vs-image-search-upload-area.after {
+      max-width: 24rem;
+      padding: 1;
+      margin: 0;
+    }
   }
 </style>
 
