@@ -104,20 +104,17 @@
         </div>
       </div>
 
-      {% comment %}
-        <div class="">
-          <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 6v6l4 2"></path>
-            </svg>
-            <p>Searching products...</p>
-          </div>
+      {% comment %} <div class="">
+        <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+          <p>Searching products...</p>
         </div>
-      {% endcomment %}
+      </div> {% endcomment %}
     </div>
   </div>
-  {% render 'search-bar-suggestion-snippet' %}
 </section>
 
 <style>
@@ -133,7 +130,46 @@
 {
   "name": "Search Suggestions",
   "target": "body",
-  "stylesheet": "search-suggestions.css"
+  "stylesheet": "search-suggestions.css",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Popular Queries"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_queries",
+      "label": "Show Popular Queries",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Popular Products"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_products",
+      "label": "Show Popular Product Images",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_dynamic_search",
+      "label": "Enable Dynamic Search Results",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "search_delay",
+      "min": 100,
+      "max": 1000,
+      "step": 100,
+      "unit": "ms",
+      "label": "Search Delay",
+      "default": 300,
+      "info": "Delay before searching after typing stops"
+    }
+  ]
 }
 {% endschema %}
 
