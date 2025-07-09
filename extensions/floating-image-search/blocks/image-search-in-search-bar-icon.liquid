@@ -1,4 +1,4 @@
-<div class=" block-{{ block.id }} vs-search-bar-modal" id="vs-search-bar-modal">
+<div class="block-{{ block.id }} vs-search-bar-modal" id="vs-search-bar-modal">
   {%- render 'image-search-snippet' -%}
 </div>
 
@@ -6,6 +6,7 @@
   .vs-search-bar-modal.active {
     display: block !important;
   }
+
   .vs-snp-image-search-error {
     z-index: 9;
     box-shadow: 2px 2px;
@@ -21,7 +22,6 @@
       // Find all search forms
       const searchForms = document.querySelectorAll('form[action="/search"]');
       const searchBarModal = document.getElementById('vs-search-bar-modal');
-      // const searchBarCloseButton = document.getElementById('vs-search-bar-modal-close');
 
       searchForms.forEach((form) => {
         // Create the image search icon
@@ -58,29 +58,18 @@
             imageButton.addEventListener('click', function (e) {
               e.preventDefault();
               searchBarModal.classList.toggle('active');
+
+              // Toggle visibility of the suggestions wrapper
+              const searchBarSuggestionModal = form.querySelector('.vs-sg-search-suggestions-wrapper');
+              if (searchBarSuggestionModal) {
+                searchBarSuggestionModal.classList.toggle('zbellow');
+              } else {
+                console.error('Element with class ".vs-sg-search-suggestions-wrapper" not found within the form.');
+              }
             });
           }
         }
       });
-    }
-  });
-
-  // when vs-search-bar-image-button button clicked, toggle visiblity of '.vs-sg-search-suggestions-wrapper'
-  document.addEventListener('DOMContentLoaded', function () {
-    // Ensure the DOM is fully loaded before querying elements
-    const imageButton = document.querySelector('.vs-search-bar-image-button');
-
-    if (imageButton) {
-      imageButton.addEventListener('click', function (e) {
-        e.preventDefault(); // Prevent any default behavior
-        console.log('Image search button clicked');
-
-        // Toggle visibility of the suggestions wrapper
-        const searchBarSuggestionModal = document.querySelector('form[action="/search"] .vs-sg-search-suggestions-wrapper');
-        searchBarSuggestionModal.classList.toggle('zbellow');
-      });
-    } else {
-      console.error('Element with class ".vs-search-bar-image-button" not found.');
     }
   });
 </script>
@@ -89,7 +78,8 @@
   .vs-sg-search-suggestions-wrapper {
     visibility: visible;
   }
-  .zbellow  {
+
+  .zbellow {
     z-index: 0 !important;
   }
 </style>
@@ -106,17 +96,18 @@
   .vs-snp-image-search-float {
     position: static !important;
   }
+
   .vs-snp-image-search-button,
   .vs-snp-image-search-modal-header {
     display: none !important;
   }
+
   .vs-snp-image-search-modal {
     position: static !important;
     display: block !important;
   }
+
   .vs-snp-image-search-modal-content {
-    max-width: 100% !important;
-    width: 100% !important;
     max-width: 100% !important;
     width: 100% !important;
     box-shadow: none;
@@ -124,25 +115,32 @@
     height: auto;
     max-height: fit-content;
   }
+
   .vs-snp-image-search-upload-area.has-content.after {
     padding: 10px;
   }
+
   .vs-snp-image-preview {
     margin: 0 !important;
   }
+
   .vs-snp-svg-wrapper {
     padding: 10px;
   }
+
   .vs-snp-image-search-results-grid,
   .vs-snp-image-search-skeleton-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 12px;
   }
+
   .vs-snp-image-search-product-title {
     font-size: 12px;
     line-height: 1.2;
   }
-  .vs-snp-image-search-upload-button, .vs-image-search-upload-button{
+
+  .vs-snp-image-search-upload-button,
+  .vs-image-search-upload-button {
     font-family: inherit;
   }
 </style>

@@ -1,10 +1,5 @@
-<link
-  href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
-  rel="stylesheet"
->
-
-<section class="vs-image-search-float">
-  <button class="vs-image-search-button" id="vs-image-search-button" aria-label="Search by image">
+<section class="vs-image-search-float block-{{ block.id }}">
+  <button class="vs-image-search-button" id="vs-image-search-button">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
@@ -27,17 +22,10 @@
   <div class="vs-image-search-modal" id="vs-image-search-modal">
     <div class="vs-image-search-modal-content">
       <div class="vs-image-search-modal-header">
-        <h2>Image Search</h2>
+        <h2>{{ block.settings.title }}</h2>
         <button class="vs-image-search-close" id="vs-image-search-close">&times;</button>
       </div>
       <div class="vs-image-search-modal-body">
-        <!-- Add error message container -->
-        {% comment %}
-          <div class="vs-image-search-error" id="vs-image-search-error" style="display: none;">
-            <p>Error searching for products. Please try again.</p>
-          </div>
-        {% endcomment %}
-
         <!-- Add loading indicator -->
         <div class="vs-image-search-loading" id="vs-image-search-loading" style="display: none;">
           <div class="vs-image-search-spinner"></div>
@@ -48,12 +36,20 @@
           <div class="vs-image-search-upload-area" id="vs-image-search-upload-area">
             <div class="vs-image-search-upload-icon" id="vs-image-search-upload-icon">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-                <path d="M0 0h24v24H0V0z" fill="none"/><path d="M18 20H4V6h9V4H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-9h-2v9zm-7.79-3.17l-1.96-2.36L5.5 18h11l-3.54-4.71zM20 4V1h-2v3h-3c.01.01 0 2 0 2h3v2.99c.01.01 2 0 2 0V6h3V4h-3z"/>
+                <path d="M0 0h24v24H0V0z" fill="none"/>
+                <path d="M18 20H4V6h9V4H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-9h-2v9zm-7.79-3.17l-1.96-2.36L5.5 18h11l-3.54-4.71zM20 4V1h-2v3h-3c.01.01 0 2 0 2h3v2.99c.01.01 2 0 2 0V6h3V4h-3z"/>
               </svg>
             </div>
             <div class="vs-image-preview-wrapper" style="position: relative;">
               <div class="">
-                <img id="vs-image-preview" class="vs-image-preview" style="display: none;" alt="Image preview">
+                <img
+                  id="vs-image-preview"
+                  class="vs-image-preview"
+                  width=""
+                  height=""
+                  style="display: none; margin: 0px;"
+                  alt="Image preview"
+                >
                 <div class="vs-svg-wrapper" style="position: absolute;">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -113,46 +109,50 @@
           <h3>Popular Search Product Images</h3>
           <div class="vs-image-search-popular-grid">
             <!-- Popular product images would be dynamically loaded here -->
-            <img
-              width=""
-              height=""
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              class="vs-popular-image"
-              loading="lazy"
-            >
-            <img
-              width=""
-              height=""
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              loading="lazy"
-              class="vs-popular-image"
-            >
-            <img
-              width=""
-              height=""
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              loading="lazy"
-              class="vs-popular-image"
-            >
-            <img
-              width=""
-              height=""
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              loading="lazy"
-              class="vs-popular-image"
-            >
-            <img
-              width=""
-              height=""
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              loading="lazy"
-              class="vs-popular-image"
-            >
+            {% comment %}
+              <img
+                width=""
+                height=""
+                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
+                alt="Merino Wool Socks Orange"
+                class="vs-popular-image"
+                loading="lazy"
+              >
+            {% endcomment %}
+            {% comment %}
+              <img
+                width=""
+                height=""
+                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
+                alt="Merino Wool Socks Orange"
+                loading="lazy"
+                class="vs-popular-image"
+              >
+              <img
+                width=""
+                height=""
+                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
+                alt="Merino Wool Socks Orange"
+                loading="lazy"
+                class="vs-popular-image"
+              >
+              <img
+                width=""
+                height=""
+                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
+                alt="Merino Wool Socks Orange"
+                loading="lazy"
+                class="vs-popular-image"
+              >
+              <img
+                width=""
+                height=""
+                src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
+                alt="Merino Wool Socks Orange"
+                loading="lazy"
+                class="vs-popular-image"
+              >
+            {% endcomment %}
           </div>
         </div>
       </div>
@@ -207,11 +207,11 @@
         const skeletonItem = document.createElement('div');
         skeletonItem.className = 'vs-image-search-skeleton-item';
         skeletonItem.innerHTML = `
-                <div class="vs-image-search-skeleton-image"></div>
-                <div class="vs-image-search-skeleton-info">
-                    <div class="vs-image-search-skeleton-title"></div>
-                </div>
-            `;
+          <div class="vs-image-search-skeleton-image"></div>
+          <div class="vs-image-search-skeleton-info">
+            <div class="vs-image-search-skeleton-title"></div>
+          </div>
+        `;
         skeletonGrid.appendChild(skeletonItem);
       }
     }
@@ -486,8 +486,137 @@
         }
       }
     });
+
+    // Function to create skeleton items for popular products
+    function createPopularSkeletonItems(count) {
+      const popularGrid = document.querySelector('.vs-image-search-popular-grid');
+      popularGrid.innerHTML = ''; // Clear existing content
+
+      for (let i = 0; i < count; i++) {
+        const skeletonItem = document.createElement('div');
+        skeletonItem.className = 'vs-image-search-skeleton-item';
+        skeletonItem.innerHTML = `
+        <div class="vs-image-search-skeleton-image"></div>
+      `;
+        popularGrid.appendChild(skeletonItem);
+      }
+
+      // Show skeleton loader
+      popularGrid.style.display = 'grid';
+    }
+
+    // Function to fetch recommended product images
+    function fetchRecommendedProducts() {
+      const popularGrid = document.querySelector('.vs-image-search-popular-grid');
+
+      // Show skeleton loader before fetching
+      createPopularSkeletonItems(6); // Adjust count based on expected number of popular products
+
+      fetch(`${shopUrl}/apps/api/recommended-products`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data?.products) {
+            console.log('Recommended products:', data?.products);
+            displayRecommendedProducts(data.products);
+          } else {
+            console.error('No recommended products found');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching recommended products:', error);
+        });
+    }
+
+    // Function to display recommended product images
+    function displayRecommendedProducts(products) {
+      const popularGrid = document.querySelector('.vs-image-search-popular-grid');
+      popularGrid.innerHTML = ''; // Clear existing images
+
+      products.nodes.forEach((product) => {
+        if (product.featuredImage && product.featuredImage.url) {
+          const img = document.createElement('img');
+          img.src = product.featuredImage.url;
+          img.alt = product.title;
+          img.className = 'vs-popular-image';
+          img.loading = 'lazy';
+
+          // Attach click event to fetch and process image
+          img.addEventListener('click', function () {
+            fetch(img.src)
+              .then((response) => response.blob())
+              .then((blob) => {
+                const file = new File([blob], 'popular-image.jpg', { type: blob.type });
+                processImage(file);
+              })
+              .catch((error) => {
+                console.error('Error fetching popular image:', error);
+                errorElement.style.display = 'block';
+                errorElement.querySelector('p').textContent = 'Error processing the selected image. Please try again.';
+              });
+          });
+
+          popularGrid.appendChild(img);
+        }
+      });
+
+      // After rendering, ensure they are displayed
+      popularGrid.style.display = 'grid';
+    }
+
+    // Function to hide skeleton loader
+    function hideSkeletonLoader() {
+      const popularGrid = document.querySelector('.vs-image-search-popular-grid');
+      const skeletonItems = popularGrid.querySelectorAll('.vs-image-search-skeleton-item');
+      skeletonItems.forEach((item) => item.remove());
+
+      // Optionally, you can display a message or leave it empty
+      // If no products and no skeletons, just keep it empty
+      if (popularGrid.children.length === 0) {
+        popularGrid.style.display = 'none';
+      }
+    }
+
+    // Fetch recommended products on page load
+    fetchRecommendedProducts();
   });
 </script>
+
+<!-- Additional Styling -->
+<style>
+    .block-{{ block.id }}{
+      .vs-svg-wrapper{
+        svg{
+          width: 90%;
+        }
+      }
+    }
+
+    .vs-image-search-skeleton-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .vs-image-search-skeleton-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: -400% 0%;
+    }
+  }
+</style>
 
 <!-- Post Image Upload Styling -->
 <style>
@@ -495,21 +624,25 @@
     max-width: 90%;
     max-height: unset !important;
   }
+
   .vs-image-search-modal-header.after {
     display: flex;
   }
+
   .vs-image-upload-result-wrapper.after {
     display: flex;
     gap: 15px;
     position: relative;
     align-items: flex-start;
   }
+
   .vs-image-search-modal-body.after {
     height: 100%;
     overflow: auto;
     max-height: 60vh;
     position: relative;
   }
+
   .vs-image-search-upload-area.after {
     height: calc(60vh - 40px);
     position: sticky;
@@ -521,10 +654,13 @@
     flex-direction: column;
     justify-content: center; /* Center vertically */
     align-items: center; /* Center horizontally */
+    margin-bottom: 0px !important;
   }
+
   .vs-image-search-results.after {
     flex: 1;
   }
+
   .vs-image-search-popular.after {
     display: none;
   }
@@ -554,4 +690,3 @@
   ]
 }
 {% endschema %}
-

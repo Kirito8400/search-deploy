@@ -3,7 +3,7 @@
 client_id = "e55c302da4aa157a5b7b2573695dbff8"
 organization_id = "164642336"
 name = "visual-search-dev"
-application_url = "https://example.com"
+application_url = "https://search-deploy.vercel.app/"
 embedded = true
 
 [build]
@@ -14,7 +14,14 @@ api_version = "2025-10"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_themes,write_products"
+scopes = "write_products,read_themes"
+optional_scopes = [ ]
+use_legacy_install_flow = false
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://search-deploy.vercel.app/api/auth" ]
+
+[app_proxy]
+url = "https://search-deploy.vercel.app/api/"
+subpath = "api"
+prefix = "apps"

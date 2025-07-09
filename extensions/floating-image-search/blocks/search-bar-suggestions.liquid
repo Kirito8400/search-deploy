@@ -21,7 +21,7 @@
       <div class="vs-sg-popular-search-products">
         <h3>Popular Search Product Images</h3>
         <div class="vs-sg-popular-products-grid">
-          <a href="/products/merino-wool-socks-orange" class="vs-sg-product-image">
+          {% comment %} <a href="/products/merino-wool-socks-orange" class="vs-sg-product-image">
             <img
               src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
               alt="Merino Wool Socks Orange"
@@ -29,52 +29,7 @@
               height=""
               loading="lazy"
             >
-          </a>
-          <a href="/products/merino-wool-socks-green" class="vs-sg-product-image">
-            <img
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              loading="lazy"
-              width=""
-              height=""
-            >
-          </a>
-          <a href="/products/merino-wool-socks-multi" class="vs-sg-product-image">
-            <img
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              width=""
-              height=""
-              loading="lazy"
-            >
-          </a>
-          <a href="/products/hybrid-vest" class="vs-sg-product-image">
-            <img
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              width=""
-              height=""
-              loading="lazy"
-            >
-          </a>
-          <a href="/products/hose-down-tshirt" class="vs-sg-product-image">
-            <img
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              width=""
-              height=""
-              loading="lazy"
-            >
-          </a>
-          <a href="/products/hose-down-shorts" class="vs-sg-product-image">
-            <img
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              loading="lazy"
-              width=""
-              height=""
-            >
-          </a>
+          </a> {% endcomment %}
         </div>
       </div>
 
@@ -83,36 +38,29 @@
         <h3>Products</h3>
         <div class="vs-sg-dynamic-products-grid">
           <!-- Dynamic products will be loaded here -->
-          <div class="vs-sg-loading" style="text-align: center; display: block; padding: 20px;">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="vs-sg-spinner"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 6v6l4 2"></path>
-            </svg>
-            <p>Searching products...</p>
-          </div>
+
+          <!--
+            <div class="vs-sg-loading" style="text-align: center; display: block; padding: 20px;">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="vs-sg-spinner"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              <p>Searching products...</p>
+            </div>
+          -->
         </div>
       </div>
-
-      {% comment %} <div class="">
-        <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M12 6v6l4 2"></path>
-          </svg>
-          <p>Searching products...</p>
-        </div>
-      </div> {% endcomment %}
     </div>
   </div>
 </section>
@@ -123,6 +71,11 @@
     transform: none !important;
     z-index: 9;
     box-shadow: 2px 2px;
+  }
+
+  /* hide the default search - dawn theme */
+  .predictive-search {
+    display: none !important;
   }
 </style>
 
@@ -175,6 +128,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+
     // Constants and configuration
     const CONFIG = {
       searchDelay: {{ block.settings.search_delay | default: 300 }},
@@ -245,6 +199,9 @@
         clearTimeout(searchTimeout);
 
         if (query.length > 0) {
+          // Hide dwan predictive search(.predictive-search)
+          document.querySelectorAll('.predictive-search').forEach(el => el.style.display = 'none');
+        
           // Show search results, hide popular sections
           toggleVisibility(elements, true);
 
@@ -418,21 +375,6 @@
     }
 
     /**
-     * Show loading state in results container
-     */
-    // function showLoadingState(resultsContainer) {
-    //   resultsContainer.innerHTML = `
-    //     <div class="vs-sg-loading" style="text-align: center; padding: 20px;">
-    //       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-sg-spinner">
-    //         <circle cx="12" cy="12" r="10"></circle>
-    //         <path d="M12 6v6l4 2"></path>
-    //       </svg>
-    //       <p>Searching products...</p>
-    //     </div>
-    //   `;
-    // }
-
-    /**
      * Display search results
      */
     function displaySearchResults(data, resultsContainer) {
@@ -561,5 +503,143 @@
       const uploadButton = document.querySelector('.vs-snp-upload-another-button');
       if (uploadButton) uploadButton.style.display = 'none';
     }
+
+    
+  /**
+   * Function to create skeleton loaders for popular products
+   */
+  function createPopularSkeletonItems(count) {
+    const popularGrid = document.querySelector('.vs-sg-popular-products-grid');
+    if (!popularGrid) return;
+
+    popularGrid.innerHTML = ''; // Clear existing content
+
+    for (let i = 0; i < count; i++) {
+      const skeletonItem = document.createElement('a');
+      skeletonItem.className = 'vs-sg-product-image vs-skeleton-item';
+      skeletonItem.innerHTML = `
+        <div class="vs-skeleton-img-placeholder" style="display:block;"></div>
+      `;
+      popularGrid.appendChild(skeletonItem);
+    }
+  }
+
+  /**
+   * Function to fetch recommended product images
+   */
+  function fetchRecommendedProducts() {
+    const popularGrid = document.querySelector('.vs-sg-popular-products-grid');
+    if (!popularGrid) return;
+
+    // Show skeleton loader
+    createPopularSkeletonItems(6); // Adjust based on expected number of products
+
+    fetch(`${shopUrl}/apps/api/recommended-products`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data?.products && data.products.nodes?.length > 0) {
+          displayRecommendedProducts(data.products.nodes);
+        } else {
+          // hideSkeletonLoader();
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching recommended products:', error);
+        // hideSkeletonLoader();
+      });
+  }
+
+  /**
+   * Function to display recommended product images
+   */
+  function displayRecommendedProducts(products) {
+    const popularGrid = document.querySelector('.vs-sg-popular-products-grid');
+    if (!popularGrid) return;
+
+    popularGrid.innerHTML = ''; // Clear skeletons or old content
+
+    products.forEach((product) => {
+      if (product.featuredImage && product.featuredImage.url && product.handle) {
+        const anchor = document.createElement('a');
+        anchor.href = `/products/${product.handle}`;
+        anchor.className = 'vs-sg-product-image';
+
+        const img = document.createElement('img');
+        img.src = product.featuredImage.url;
+        img.alt = product.title;
+        img.loading = 'lazy';
+
+        anchor.appendChild(img);
+        
+      // Attach click handler for image search functionality
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent default link navigation
+        const imageUrl = img.src;
+        if (!imageUrl) return;
+
+        // Find form context
+        const form = this.closest('form[action="/search"]');
+        const clonedSuggestions = this.closest('.vs-sg-search-suggestions-wrapper');
+
+        handlePopularImageClick(imageUrl, form, clonedSuggestions);
+      });
+
+        popularGrid.appendChild(anchor);
+      }
+    });
+  }
+
+  /**
+   * Function to remove skeleton loaders
+   */
+  function hideSkeletonLoader() {
+    const popularGrid = document.querySelector('.vs-sg-popular-products-grid');
+    if (!popularGrid) return;
+
+    const skeletons = popularGrid.querySelectorAll('.vs-skeleton-item');
+    skeletons.forEach((item) => item.remove());
+
+    if (popularGrid.children.length === 0) {
+      // Optional: display a fallback message
+      const noResults = document.createElement('p');
+      noResults.textContent = 'No popular products found.';
+      noResults.style.textAlign = 'center';
+      noResults.style.width = '100%';
+      popularGrid.appendChild(noResults);
+    }
+  }
+
+  // Fetch recommended products on page load
+  fetchRecommendedProducts();
   });
 </script>
+
+<style>
+  .vs-skeleton-item {
+    display: inline-block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .vs-skeleton-img-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: -400% 0%;
+    }
+  }
+</style>
