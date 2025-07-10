@@ -69,12 +69,11 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
         description={`Apply to "Product Recommendations", "Product Image Search" and "Search Recommendations."`}
       >
         <LegacyCard sectioned>
-          <div style={{ paddingBottom: "8px" }}>
+          {/* <div style={{ paddingBottom: "8px" }}>
             <InlineStack align="space-between">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
                 Hide out-of-stock products
               </Text>
-              {/* Custom toggle switch implementation */}
               <div
                 style={toggleSwitchStyles.container}
                 onClick={handleHideOutOfStockChange}
@@ -91,7 +90,7 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
               </div>
             </InlineStack>
           </div>
-          <Divider />
+          <Divider /> */}
           <div style={{ paddingTop: "8px" }}>
             <InlineStack blockAlign="center" align="space-between">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
@@ -108,5 +107,5 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
         </LegacyCard>
       </Layout.AnnotatedSection>
     </Layout>
-  );
+  );  
 }

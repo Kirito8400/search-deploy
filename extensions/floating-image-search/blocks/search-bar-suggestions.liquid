@@ -1,6 +1,20 @@
 <section class="block-{{ block.id }} vs-sg-search-suggestions-wrapper">
   <div class="vs-sg-search-suggestions">
     <div class="vs-sg-search-suggestions-container">
+      <div class="vs-sg-recent-search-query" style="">
+        <h3 style="margin: 0;">Recent Searches</h3>
+        <div
+          class="vs-sg-recent-search-query-items"
+          style="
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+          "
+        >
+          <span class="vs-sg-query-item">Merino Wool Socks</span>
+        </div>
+      </div>
       <div class="vs-sg-popular-query">
         <h3>Popular Query</h3>
         <div class="vs-sg-popular-query-grid">
@@ -21,15 +35,7 @@
       <div class="vs-sg-popular-search-products">
         <h3>Popular Search Product Images</h3>
         <div class="vs-sg-popular-products-grid">
-          {% comment %} <a href="/products/merino-wool-socks-orange" class="vs-sg-product-image">
-            <img
-              src="https://synasisio.myshopify.com/cdn/shop/files/Men_sBallisticHoody_DeepForest_2048px.jpg?v=1746982125&width=823"
-              alt="Merino Wool Socks Orange"
-              width=""
-              height=""
-              loading="lazy"
-            >
-          </a> {% endcomment %}
+          <!-- Dynamic popular product's images will be inserted here -->
         </div>
       </div>
 
@@ -38,27 +44,6 @@
         <h3>Products</h3>
         <div class="vs-sg-dynamic-products-grid">
           <!-- Dynamic products will be loaded here -->
-
-          <!--
-            <div class="vs-sg-loading" style="text-align: center; display: block; padding: 20px;">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="vs-sg-spinner"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 6v6l4 2"></path>
-              </svg>
-              <p>Searching products...</p>
-            </div>
-          -->
         </div>
       </div>
     </div>
@@ -170,6 +155,9 @@
       const searchInput = form.querySelector('input[type="search"], [name="q"], .search-input, .search__input');
       if (!searchInput) return;
 
+      // Inside initializeSearchSuggestions()
+      displayRecentSearches(searchInput); // 👈 Pass searchInput
+
       // Get UI elements
       const elements = {
         dynamicSearchResults: clonedSuggestions.querySelector('.vs-sg-dynamic-search-results'),
@@ -201,6 +189,9 @@
         if (query.length > 0) {
           // Hide dwan predictive search(.predictive-search)
           document.querySelectorAll('.predictive-search').forEach(el => el.style.display = 'none');
+
+          // Hide Recent Searches
+          document.querySelectorAll('.vs-sg-recent-search-query').forEach(el => el.style.display = 'none');
         
           // Show search results, hide popular sections
           toggleVisibility(elements, true);
@@ -232,7 +223,13 @@
      */
     function setupFormSubmitListener(form, searchInput, clonedSuggestions) {
       form.addEventListener('submit', function(e) {
-        if (searchInput.value.trim()) {
+        const query = searchInput.value.trim();
+        
+        if (query.length > 0) {
+          // Save the query to localStorage
+          saveSearchQuery(query);
+          
+          // Hide suggestions after submit
           clonedSuggestions.style.display = 'none';
         }
       });
@@ -381,6 +378,8 @@
       const products = data.resources?.results?.products || [];
 
       if (products.length > 0) {
+        resultsContainer.style.display = 'grid';
+
         // Build HTML for products
         let productsHTML = '';
 
@@ -391,6 +390,7 @@
         resultsContainer.innerHTML = productsHTML;
       } else {
         // No results found
+        resultsContainer.style.display = 'block';
         resultsContainer.innerHTML = '<p class="vs-sg-no-results">No products found. Try a different search term.</p>';
       }
     }
@@ -611,6 +611,137 @@
 
   // Fetch recommended products on page load
   fetchRecommendedProducts();
+
+  /**
+ * Save search query to localStorage with timestamp
+ * @param {string} query - Search query to save
+ */
+  function saveSearchQuery(query) {
+    const now = new Date().getTime();
+    const expirationTime = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
+    let searches = [];
+
+    // Get existing searches or initialize empty array
+    try {
+      searches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    } catch (e) {
+      console.warn('Failed to parse recent searches from localStorage');
+    }
+
+    // Remove expired searches
+    searches = searches.filter(item => now - item.timestamp < expirationTime);
+
+    // Normalize query (trim + lowercase)
+    const normalizedQuery = query.trim().toLowerCase();
+
+    // Avoid duplicates
+    if (!searches.some(item => item.query.toLowerCase() === normalizedQuery)) {
+      searches.push({
+        query: normalizedQuery,
+        timestamp: now
+      });
+
+      // Save back to localStorage
+      localStorage.setItem('recentSearches', JSON.stringify(searches));
+    }
+  }
+
+  /**
+   * Get valid, non-expired recent searches
+   * @returns {Array}
+   */
+  function getRecentSearches() {
+    const now = new Date().getTime();
+    const expirationTime = 7 * 24 * 60 * 60 * 1000;
+
+    let searches = [];
+
+    try {
+      searches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    } catch (e) {
+      console.warn('Failed to parse recent searches');
+    }
+
+    // Filter out expired entries
+    return searches.filter(item => now - item.timestamp < expirationTime);
+  }
+
+  /**
+   * Clear expired searches from localStorage
+   */
+  function clearExpiredSearches() {
+    const now = new Date().getTime();
+    const expirationTime = 7 * 24 * 60 * 60 * 1000;
+
+    let searches = [];
+
+    try {
+      searches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    } catch (e) {
+      console.warn('Failed to parse recent searches');
+    }
+
+    searches = searches.filter(item => now - item.timestamp < expirationTime);
+    localStorage.setItem('recentSearches', JSON.stringify(searches));
+  }
+
+  // Run cleanup on page load
+  document.addEventListener('DOMContentLoaded', function () {
+    clearExpiredSearches();
+
+    // Optionally: Set daily cleanup (every 24 hours)
+    const lastCleanup = localStorage.getItem('lastSearchCleanup');
+    const now = new Date().getTime();
+    if (!lastCleanup || now - parseInt(lastCleanup) > 24 * 60 * 60 * 1000) {
+      clearExpiredSearches();
+      localStorage.setItem('lastSearchCleanup', now.toString());
+    }
+  });
+
+  /**
+   * Display recent searches in the popular queries section
+   */
+   function displayRecentSearches(searchInput) {
+    const container = document.querySelector('.vs-sg-recent-search-query-items');
+    const recentSearchSection = document.querySelector('.vs-sg-recent-search-query');
+
+    if (!container || !recentSearchSection) return;
+
+    const recentQueries = getRecentSearches();
+
+    // Clear existing items except original static ones (if any)
+    Array.from(container.children).forEach(child => {
+      if (!child.classList.contains('original-static-item')) {
+        child.remove();
+      }
+    });
+
+    if (recentQueries.length === 0) {
+      // Hide the entire recent search section if no recent searches
+      recentSearchSection.style.display = 'none';
+      return;
+    }
+
+    // Show the recent search section
+    recentSearchSection.style.display = 'block';
+
+    // Append recent searches
+    recentQueries.slice(0, 10).forEach(item => {
+      const span = document.createElement('span');
+      span.className = 'vs-sg-query-item recent-search-item';
+      span.textContent = item.query;
+
+      // Add click handler to trigger search
+      span.addEventListener('click', function () {
+        searchInput.value = item.query;
+        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+
+      container.appendChild(span);
+    });
+  }
+  // displayRecentSearches();
   });
 </script>
 
@@ -640,6 +771,23 @@
     }
     100% {
       background-position: -400% 0%;
+    }
+  }
+  .vs-sg-recent-search-query {
+    h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #000;
+      font-weight: 500;
+      margin-top: 0;
+      text-transform: uppercase;
+    }
+    .vs-sg-recent-search-query-items {
+      .vs-sg-query-item {
+        width: fit-content;
+        cursor: pointer;
+        text-transform: capitalize;
+      }
     }
   }
 </style>

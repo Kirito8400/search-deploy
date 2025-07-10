@@ -59,7 +59,7 @@ export function ProductImageStatistics() {
   // Sample data - replace with actual data from your API
   const data = [
     { date: "04-14", value: 0 },
-    { date: "04-18", value: 0 },
+    { date: "04-18", value: 6 },
     { date: "04-22", value: 0 },
     { date: "04-26", value: 0 },
     { date: "04-30", value: 0 },
@@ -84,10 +84,10 @@ export function ProductImageStatistics() {
                 <CartesianGrid stroke="#E4E5E7" />
                 <XAxis dataKey="date" axisLine={false} tickLine={false} />
                 <YAxis
-                  domain={[0, 4]}
+                  domain={[0, 10]}
                   axisLine={false}
                   tickLine={false}
-                  ticks={[0, 1, 2, 3, 4]}
+                  ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
                 />
                 <Line
                   type="monotone"
@@ -148,10 +148,10 @@ function SearchPerformance() {
   // Sample data with more date points for the wider chart
   const searchData = [
     { date: "04-12", value: 0 },
-    { date: "04-14", value: 0 },
-    { date: "04-16", value: 0 },
+    { date: "04-14", value: 2 },
+    { date: "04-16", value: 3 },
     { date: "04-18", value: 0 },
-    { date: "04-20", value: 0 },
+    { date: "04-20", value: 1 },
     { date: "04-22", value: 0 },
     { date: "04-24", value: 0 },
     { date: "04-26", value: 0 },
