@@ -1,13 +1,10 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "ca33b33ed019e099b184e93807bb1159"
-name = "visual-search-deploy"
+name = "Visual Search (Deployed)"
 handle = "visual-search-deploy"
-application_url = "https://slides-mailed-ripe-dozens.trycloudflare.com"
+application_url = "https://cooking-peninsula-val-finnish.trycloudflare.com"
 embedded = true
-
-[build]
-include_config_on_deploy = true
 
 [webhooks]
 api_version = "2025-07"
@@ -17,7 +14,16 @@ api_version = "2025-07"
 scopes = "read_themes,write_products"
 
 [auth]
-redirect_urls = ["https://slides-mailed-ripe-dozens.trycloudflare.com/auth/callback", "https://slides-mailed-ripe-dozens.trycloudflare.com/auth/shopify/callback", "https://slides-mailed-ripe-dozens.trycloudflare.com/api/auth/callback"]
+redirect_urls = ["https://cooking-peninsula-val-finnish.trycloudflare.com/auth/callback", "https://cooking-peninsula-val-finnish.trycloudflare.com/auth/shopify/callback", "https://cooking-peninsula-val-finnish.trycloudflare.com/api/auth/callback"]
+
+[app_proxy]
+url = "https://cooking-peninsula-val-finnish.trycloudflare.com/api"
+subpath = "api"
+prefix = "apps"
 
 [pos]
 embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
