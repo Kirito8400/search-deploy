@@ -26,7 +26,7 @@ export default function App() {
         <Link to="/app/plan">Plan</Link>
         <Link to="/app/help">Help</Link>
         {/* <Link to="/app/additional">Additional page</Link> */}
-        <Link to="/app/image-searcher-beta">Image Searcher (Api Testing)</Link>
+        {/* <Link to="/app/image-searcher-beta">Image Searcher (Api Testing)</Link> */}
       </NavMenu>
       <Outlet />
     </AppProvider>

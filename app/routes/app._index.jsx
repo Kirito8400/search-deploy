@@ -49,7 +49,7 @@ export default function Dashboard() {
       <BlockStack gap="400">
         <WelcomeCard redirectToThemeEditor={redirectToThemeEditor} />
         <CurrentPlan />
-        <ProductStatus />
+        {/* <ProductStatus /> */}
         <ReviewSection />
         <Statistics />
       </BlockStack>

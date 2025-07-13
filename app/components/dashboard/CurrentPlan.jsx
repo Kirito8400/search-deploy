@@ -30,19 +30,19 @@ export function CurrentPlan() {
 
         <InlineStack align="space-between" blockAlign="center" wrap={false}>
           <Text variant="bodyMd" as="p" fontWeight="semibold">
-            Number of products
+            Number of Query Searches
           </Text>
           <Text variant="bodyMd" as="p">
-            Up to 100 products
+            Unlimited search times
           </Text>
         </InlineStack>
 
         <InlineStack align="space-between" blockAlign="center" wrap={false}>
           <Text variant="bodyMd" as="p" fontWeight="semibold">
-            Search count
+            Number of Ai Visual Searches
           </Text>
           <Text variant="bodyMd" as="p">
-            Unlimited search times
+            Up to 200 searches
           </Text>
         </InlineStack>
       </BlockStack>

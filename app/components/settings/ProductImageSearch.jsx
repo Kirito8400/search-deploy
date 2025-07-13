@@ -117,9 +117,9 @@ export default function ProductImageSearch({
     <Layout>
       <Layout.AnnotatedSection
         id="productImageSearch"
-        title="Product image search"
+        title="Float Image Search"
         description={
-          'On the product information page, add a "Product Image Search" block that allows users to upload images or directly search for products within the store. The AI will then search for matching products.'
+          'Float Image Search is a feature that uses AI to automatically recommend products of the similar style.'
         }
       >
         <BlockStack gap={"400"}>
@@ -128,7 +128,7 @@ export default function ProductImageSearch({
           <Card>
             <InlineStack align="space-between">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
-                Product image search
+                Floating Image Search
               </Text>
               <ToggleSwitch
                 checked={productImageSearch}
@@ -137,7 +137,7 @@ export default function ProductImageSearch({
             </InlineStack>
           </Card>
 
-          {productImageSearch && (
+          {/* {productImageSearch && (
             <>
               <Card>
                 <BlockStack gap={"400"}>
@@ -187,7 +187,6 @@ export default function ProductImageSearch({
               </Card>
 
               <Card>
-                {/* <LegacyCard.Section title="Image search results items"> */}
                 <InlineStack align="space-between">
                   <Text variant="bodyMd">Show "Image Search" button</Text>
                   <ToggleSwitch
@@ -217,7 +216,7 @@ export default function ProductImageSearch({
                 </div>
               </Card>
             </>
-          )}
+          )} */}
           {/* </LegacyCard> */}
         </BlockStack>
       </Layout.AnnotatedSection>

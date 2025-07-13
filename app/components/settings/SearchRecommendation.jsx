@@ -7,10 +7,13 @@ import {
   InlineStack,
   Select,
   Checkbox,
+  RadioButton,
+  TextField,
 } from "@shopify/polaris";
+import { useCallback } from "react";
 
 // Search recommendations settings section
-export default function SearchRecommendationsSettings({ 
+export default function SearchRecommendationsSettings({
   searchRecommendations,
   setSearchRecommendations,
   customHotKeywords,
@@ -109,12 +112,20 @@ export default function SearchRecommendationsSettings({
     </div>
   );
 
+  const [hotKeywordRecommendations, setHotKeywordRecommendations] = useState('aiKeyRecommendations');
+  const [showCustomKeywordsField, setShowCustomKeywordsField] = useState(false);
+
+  const handleHotKeywordRecommendationsChange = useCallback(
+    (newValue) => setHotKeywordRecommendations(newValue),
+    [],
+  );
+
   return (
     <Layout>
       <Layout.AnnotatedSection
         id={"SearchRecommendation"}
         title="Search recommendations"
-        description={`Add suggested "Keywords," "Products," and "Product Collection" in the search input box.`}
+        description={`Search recommendations are based on your customers' search history.`}
       >
         <BlockStack gap="400">
           {/* Search recommendations toggle */}
@@ -130,8 +141,48 @@ export default function SearchRecommendationsSettings({
             </InlineStack>
           </Card>
 
-          {/* Custom hot keywords */}
+
           <Card padding="400">
+            <BlockStack gap="200">
+              <Text as="h3" variant="bodyLg" fontWeight="semibold">
+                Hot Keywords
+              </Text>
+              <RadioButton
+                label="AI recommendation"
+                helpText="Recommendations are generated via AI to your customers."
+                checked={hotKeywordRecommendations === 'aiKeyRecommendations'}
+                id="aiKeyRecommendations"
+                name="aiKeyRecommendations"
+                onChange={() => {
+                  handleHotKeywordRecommendationsChange('aiKeyRecommendations');
+                  setShowCustomKeywordsField(false);
+                }}
+              />
+              <RadioButton
+                label="Manual recommendation"
+                helpText="Recommendations are generated manually."
+                checked={hotKeywordRecommendations === 'manualKeyRecommendations'}
+                id="manualKeyRecommendations"
+                name="manualKeyRecommendations"
+                onChange={() => {
+                  handleHotKeywordRecommendationsChange('manualKeyRecommendations');
+                  setShowCustomKeywordsField(true);
+                }}
+              />
+              {showCustomKeywordsField && (
+                <TextField
+                  label="Custom hot keywords"
+                  value={customHotKeywords}
+                  onChange={setCustomHotKeywords}
+                  autoComplete="off"
+                  placeholder="jacket, t-shirt, shoes, etc"
+                />
+              )}
+            </BlockStack>
+          </Card>
+
+          {/* Custom hot keywords */}
+          {/* <Card padding="400">
             <BlockStack gap="200">
               <InlineStack align="space-between">
                 <Checkbox
@@ -160,7 +211,6 @@ export default function SearchRecommendationsSettings({
                 </BlockStack>
               )}
 
-              {/* Custom hot product collections */}
               <InlineStack align="space-between">
                 <Checkbox
                   label={
@@ -190,7 +240,7 @@ export default function SearchRecommendationsSettings({
                 </BlockStack>
               )}
             </BlockStack>
-          </Card>
+          </Card> */}
 
           {/* Sampling interval */}
           <Card padding="400">
@@ -199,9 +249,7 @@ export default function SearchRecommendationsSettings({
                 Sampling interval
               </Text>
               <Text as="p" variant="bodyMd" color="subdued">
-                The time range for recording user search keywords and browsing
-                behavior. Adjusting the interval will change the popular
-                recommendation results.
+                The time range for recording user search keywords. And showing recent search
               </Text>
               <Select
                 options={intervalOptions}
@@ -213,7 +261,7 @@ export default function SearchRecommendationsSettings({
           </Card>
 
           {/* Search items */}
-          <Card padding="400">
+          {/* <Card padding="400">
             <BlockStack gap="400">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
                 Search items
@@ -245,7 +293,7 @@ export default function SearchRecommendationsSettings({
                 />
               </InlineStack>
             </BlockStack>
-          </Card>
+          </Card> */}
         </BlockStack>
       </Layout.AnnotatedSection>
     </Layout>

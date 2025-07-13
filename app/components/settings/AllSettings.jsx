@@ -69,7 +69,7 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
         description={`Apply to "Product Recommendations", "Product Image Search" and "Search Recommendations."`}
       >
         <LegacyCard sectioned>
-          {/* <div style={{ paddingBottom: "8px" }}>
+          <div style={{ paddingBottom: "0px" }}>
             <InlineStack align="space-between">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
                 Hide out-of-stock products
@@ -90,8 +90,8 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
               </div>
             </InlineStack>
           </div>
-          <Divider /> */}
-          <div style={{ paddingTop: "8px" }}>
+          {/* <Divider /> */}
+          {/* <div style={{ paddingTop: "8px" }}>
             <InlineStack blockAlign="center" align="space-between">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
                 Add to cart : subcategory selector style
@@ -103,7 +103,7 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
                 labelHidden
               />
             </InlineStack>
-          </div>
+          </div> */}
         </LegacyCard>
       </Layout.AnnotatedSection>
     </Layout>

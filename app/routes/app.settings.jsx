@@ -44,7 +44,7 @@ export default function MainSettings() {
   const settings = {
     AllSettings: {
       hideOutOfStock: hideOutOfStock,
-      selectorStyle: selectorStyle,
+      // selectorStyle: selectorStyle,
     },
     ProductImageSearch: {
       productImageSearch: productImageSearch,
@@ -105,7 +105,7 @@ export default function MainSettings() {
           setShowCollectionRecommendations={setShowCollectionRecommendations}
         />
         <Divider borderColor="border" borderWidth="050" />
-        <ProductRecommendation
+        {/* <ProductRecommendation
           productRecommendations={productRecommendationsR}
           setProductRecommendations={setProductRecommendationsR}
           showImageSearchButton={showImageSearchButtonR}
@@ -116,8 +116,8 @@ export default function MainSettings() {
           setDisplayCollectionInfo={setDisplayCollectionInfoR}
           cacheTime={cacheTimeR}
           setCacheTime={setCacheTimeR}
-        />
-        <Divider borderColor="border" borderWidth="050" />
+        /> */}
+        {/* <Divider borderColor="border" borderWidth="050" /> */}
         <ProductImageSearch
           productImageSearch={productImageSearch}
           setProductImageSearch={setProductImageSearch}

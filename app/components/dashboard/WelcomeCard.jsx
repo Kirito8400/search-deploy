@@ -4,13 +4,13 @@ import { CheckCircleIcon } from "@shopify/polaris-icons";
 
 export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
   const [openStep, setOpenStep] = useState(1);
-  const [completedSteps, setCompletedSteps] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState(1);
 
   const toggleStep = (step) => {
     setOpenStep(step);
-    if (step > completedSteps) {
-      setCompletedSteps(step);
-    }
+    // if (step > completedSteps) {
+    //   setCompletedSteps(step);
+    // }
   };
 
   // Calculate progress percentage
@@ -97,23 +97,23 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
                 justifyContent: "center",
               }}
             >
-              {/* {completedSteps >= 0 ? ( */}
-              <div
-                class="_unfinished-circle_y0zy0_246"
-                bis_size='{"x":211,"y":352,"w":20,"h":20,"abs_x":451,"abs_y":464}'
-                style={{
-                  border: "2px dashed #616161",
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                }}
-              ></div>
-              {/* ) : (
-                <CheckCircleIcon />
-              )} */}
+              {completedSteps >= 0 ? (
+                <div style={{ width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', }} bis_size="{&quot;x&quot;:40,&quot;y&quot;:188,&quot;w&quot;:20,&quot;h&quot;:20,&quot;abs_x&quot;:280,&quot;abs_y&quot;:300}"><svg viewBox="0 0 20 20" width="30" bis_size="{&quot;x&quot;:40,&quot;y&quot;:188,&quot;w&quot;:20,&quot;h&quot;:20,&quot;abs_x&quot;:280,&quot;abs_y&quot;:300}"><path d="M13.28 9.03a.75.75 0 0 0-1.06-1.06l-2.97 2.97-1.22-1.22a.75.75 0 0 0-1.06 1.06l1.75 1.75a.75.75 0 0 0 1.06 0l3.5-3.5Z" bis_size="{&quot;x&quot;:46,&quot;y&quot;:195,&quot;w&quot;:6,&quot;h&quot;:4,&quot;abs_x&quot;:286,&quot;abs_y&quot;:307}"></path><path fill-rule="evenodd" d="M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Zm-1.5 0a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z" bis_size="{&quot;x&quot;:43,&quot;y&quot;:191,&quot;w&quot;:14,&quot;h&quot;:14,&quot;abs_x&quot;:283,&quot;abs_y&quot;:303}"></path></svg></div>
+              ) : (
+                <div
+                  class="_unfinished-circle_y0zy0_246"
+                  bis_size='{"x":211,"y":352,"w":20,"h":20,"abs_x":451,"abs_y":464}'
+                  style={{
+                    border: "2px dashed #616161",
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                  }}
+                ></div>
+              )}
             </div>
             <Text variant="headingSm">
-              Step 1: New product image processing
+              Step 1: App Installed Successfully
             </Text>
           </div>
 
@@ -127,15 +127,8 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
               }}
             >
               <p>
-                New product images need to be processed by our AI model before
-                they can be used for search, meaning unprocessed items will not
-                be searchable or appear in "Product Recommendations". The system
-                will complete processing within 6 hours. You can also check the
-                product processing status on the{" "}
-                <a href="#" style={{ textDecoration: "none" }}>
-                  select products to use Visual Search
-                </a>
-                . Thank you for using our service!
+                Thanks for installing our app! We're excited to help you get
+                the most out of your store.
               </p>
             </div>
           )}
@@ -179,7 +172,7 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
             </div>
 
             <Text variant="headingSm">
-              Step 2: New product image processing
+              Step 2: Enable the Apps Embed
             </Text>
           </div>
 
@@ -202,27 +195,14 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
                     }}
                   >
                     <Text fontWeight="regular" variant="headingSm">
-                      Open Image Search Float
+                      Enable Image Search Float
                     </Text>
                     <Text fontWeight="regular" variant="headingSm">
-                      Open In-Store Image Search
+                      Enable Search Suggestion Bar
                     </Text>
                     <Text fontWeight="regular" variant="headingSm">
-                      Open Input Image Search
+                      Enable Image Search Bar Icon
                     </Text>
-                    <Text fontWeight="regular" variant="headingSm">
-                      Open Text Search Suggestion
-                    </Text>
-                    <Text fontWeight="regular" variant="headingSm">
-                      Open Product Recommendations
-                    </Text>
-                    <Text fontWeight="regular" variant="headingSm">
-                      Open Product Image Search
-                    </Text>
-                    <Text fontWeight="regular" variant="headingSm">
-                      Open Image Search in header
-                    </Text>
-
                     <div>
                       <Button variant="primary" onClick={redirectToThemeEditor}>Open theme editor</Button>
                     </div>
@@ -281,7 +261,7 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
                 <CheckCircleIcon />
               )} */}
             </div>
-            <Text variant="headingSm">Step : New product image processing</Text>
+            <Text variant="headingSm">Step : Upgrade to get Limitless Features</Text>
           </div>
 
           {openStep === 3 && (
