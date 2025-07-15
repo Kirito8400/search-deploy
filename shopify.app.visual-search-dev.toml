@@ -19,7 +19,7 @@ use_legacy_install_flow = false
 redirect_urls = [ "https://search-deploy.vercel.app/api/auth" ]
 
 [app_proxy]
-url = "https://shadow-creations-webmasters-routines.trycloudflare.com/api/"
+url = "https://continental-market-act-rocks.trycloudflare.com/api/"
 subpath = "api"
 prefix = "apps"
 
