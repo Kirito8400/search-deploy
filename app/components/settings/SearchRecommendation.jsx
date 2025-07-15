@@ -14,33 +14,15 @@ import { useCallback } from "react";
 
 // Search recommendations settings section
 export default function SearchRecommendationsSettings({
-  searchRecommendations,
-  setSearchRecommendations,
+  hotKeywords,
+  setHotKeywords,
   customHotKeywords,
   setCustomHotKeywords,
-  customHotCollections,
-  setCustomHotCollections,
-  keywordMenu,
-  setKeywordMenu,
-  collectionMenu,
-  setCollectionMenu,
+  showRecentSearches,
+  setShowRecentSearches,
   samplingInterval,
   setSamplingInterval,
-  showKeywordRecommendations,
-  setShowKeywordRecommendations,
-  showCollectionRecommendations,
-  setShowCollectionRecommendations,
 }) {
-  // const [searchRecommendations, setSearchRecommendations] = useState(true);
-  // const [customHotKeywords, setCustomHotKeywords] = useState(false);
-  // const [customHotCollections, setCustomHotCollections] = useState(false);
-  // const [keywordMenu, setKeywordMenu] = useState("main_menu");
-  // const [collectionMenu, setCollectionMenu] = useState("main_menu");
-  // const [samplingInterval, setSamplingInterval] = useState("7");
-  // const [showKeywordRecommendations, setShowKeywordRecommendations] =
-  //   useState(true);
-  // const [showCollectionRecommendations, setShowCollectionRecommendations] =
-  //   useState(true);
 
   const menuOptions = [{ label: "Main menu", value: "main_menu" }];
 
@@ -112,8 +94,9 @@ export default function SearchRecommendationsSettings({
     </div>
   );
 
-  const [hotKeywordRecommendations, setHotKeywordRecommendations] = useState('aiKeyRecommendations');
-  const [showCustomKeywordsField, setShowCustomKeywordsField] = useState(false);
+  // const [hotKeywordRecommendations, setHotKeywordRecommendations] = useState('aiKeyRecommendations');
+  // const [showCustomKeywordsField, setShowCustomKeywordsField] = useState(false);
+  // const [popularImageSearch, setPopularImageSearch] = useState(false);
 
   const handleHotKeywordRecommendationsChange = useCallback(
     (newValue) => setHotKeywordRecommendations(newValue),
@@ -128,25 +111,20 @@ export default function SearchRecommendationsSettings({
         description={`Search recommendations are based on your customers' search history.`}
       >
         <BlockStack gap="400">
-          {/* Search recommendations toggle */}
-          <Card padding="400">
-            <InlineStack align="space-between">
-              <Text variant="headingMd">Enable</Text>
-              <ToggleSwitch
-                checked={searchRecommendations}
-                onChange={() =>
-                  setSearchRecommendations(!searchRecommendations)
-                }
-              />
-            </InlineStack>
-          </Card>
-
-
           <Card padding="400">
             <BlockStack gap="200">
-              <Text as="h3" variant="bodyLg" fontWeight="semibold">
+              <Text as="h3" variant="headingMd" fontWeight="semibold">
                 Hot Keywords
               </Text>
+              <InlineStack align="space-between">
+                <Text variant="headingMd">Enable</Text>
+                <ToggleSwitch
+                  checked={hotKeywords}
+                  onChange={() =>
+                    setHotKeywords(!hotKeywords)
+                  }
+                />
+              </InlineStack>
               <RadioButton
                 label="AI recommendation"
                 helpText="Recommendations are generated via AI to your customers."
@@ -173,7 +151,7 @@ export default function SearchRecommendationsSettings({
                 <TextField
                   label="Custom hot keywords"
                   value={customHotKeywords}
-                  onChange={setCustomHotKeywords}
+                  onChange={(value) => setCustomHotKeywords(value)}
                   autoComplete="off"
                   placeholder="jacket, t-shirt, shoes, etc"
                 />
@@ -181,75 +159,33 @@ export default function SearchRecommendationsSettings({
             </BlockStack>
           </Card>
 
-          {/* Custom hot keywords */}
-          {/* <Card padding="400">
-            <BlockStack gap="200">
+          <Card padding="400">
+            <BlockStack gap="400">
+              <Text as="h3" variant="headingMd" fontWeight="semibold">
+                Recent Searches
+              </Text>
               <InlineStack align="space-between">
-                <Checkbox
-                  label={
-                    <Text variant="bodyMd" fontWeight="semibold">
-                      Custom hot keywords
-                    </Text>
-                  }
-                  checked={customHotKeywords}
-                  onChange={() => setCustomHotKeywords(!customHotKeywords)}
+                <Text variant="bodyMd" fontWeight="semibold">
+                  Show recent searches
+                </Text>
+                <ToggleSwitch
+                  checked={showRecentSearches}
+                  onChange={() => {
+                    setShowRecentSearches(!showRecentSearches);
+                  }}
                 />
               </InlineStack>
-
-              {customHotKeywords && (
-                <BlockStack gap="200">
-                  <Text as="p" variant="bodyMd" color="subdued">
-                    You can customize recommended content in the "Content Menu"
-                    in the backend and select the menu to apply.
-                  </Text>
-                  <Select
-                    options={menuOptions}
-                    value={keywordMenu}
-                    onChange={setKeywordMenu}
-                    label=""
-                  />
-                </BlockStack>
-              )}
-
-              <InlineStack align="space-between">
-                <Checkbox
-                  label={
-                    <Text variant="bodyMd" fontWeight="semibold">
-                      Custom hot product collections
-                    </Text>
-                  }
-                  checked={customHotCollections}
-                  onChange={() =>
-                    setCustomHotCollections(!customHotCollections)
-                  }
-                />
-              </InlineStack>
-
-              {customHotCollections && (
-                <BlockStack gap="200">
-                  <Text as="p" variant="bodyMd" color="subdued">
-                    You can customize recommended content in the "Content Menu"
-                    in the backend and select the menu to apply.
-                  </Text>
-                  <Select
-                    options={menuOptions}
-                    value={collectionMenu}
-                    onChange={setCollectionMenu}
-                    label=""
-                  />
-                </BlockStack>
-              )}
             </BlockStack>
-          </Card> */}
+          </Card>
 
           {/* Sampling interval */}
           <Card padding="400">
             <BlockStack gap="400">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
-                Sampling interval
+                Recent Search interval
               </Text>
               <Text as="p" variant="bodyMd" color="subdued">
-                The time range for recording user search keywords. And showing recent search
+                The time range for recording user's search keywords. And showing recent search
               </Text>
               <Select
                 options={intervalOptions}
@@ -260,40 +196,27 @@ export default function SearchRecommendationsSettings({
             </BlockStack>
           </Card>
 
-          {/* Search items */}
-          {/* <Card padding="400">
+          {/* Popualar Image Search */}
+          <Card padding="400">
             <BlockStack gap="400">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
-                Search items
+                Popular Image Search
               </Text>
-
-              <InlineStack align="space-between">
-                <Text variant="bodyMd">
-                  Show "Keyword" recommendations and related searches
-                </Text>
-                <ToggleSwitch
-                  checked={showKeywordRecommendations}
-                  onChange={() =>
-                    setShowKeywordRecommendations(!showKeywordRecommendations)
-                  }
-                />
-              </InlineStack>
-
-              <InlineStack align="space-between">
-                <Text variant="bodyMd">
-                  Show "Product Collection" recommendations and related searches
-                </Text>
-                <ToggleSwitch
-                  checked={showCollectionRecommendations}
-                  onChange={() =>
-                    setShowCollectionRecommendations(
-                      !showCollectionRecommendations,
-                    )
-                  }
-                />
-              </InlineStack>
+              <BlockStack gap="200">
+                <InlineStack align="space-between">
+                  <Text variant="bodyMd">
+                    Show popular image search
+                  </Text>
+                  <ToggleSwitch
+                    checked={popularImageSearch}
+                    onChange={() =>
+                      setPopularImageSearch(!popularImageSearch)
+                    }
+                  />
+                </InlineStack>
+              </BlockStack>
             </BlockStack>
-          </Card> */}
+          </Card>
         </BlockStack>
       </Layout.AnnotatedSection>
     </Layout>

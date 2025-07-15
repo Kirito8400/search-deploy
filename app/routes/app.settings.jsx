@@ -9,7 +9,9 @@ export default function MainSettings() {
 
   // allSettings states
   const [hideOutOfStock, setHideOutOfStock] = useState(false);
-  const [selectorStyle, setSelectorStyle] = useState("button");
+  const [RecommendedImageSearchPerRow, setRecommendedImageSearchPerRow] = useState(6);
+  const [RecommendedImageAspectRatio, setRecommendedImageAspectRatio] = useState('portrait');
+  const [RecommendedImageBorderRadius, setRecommendedImageBorderRadius] = useState(4);
 
   // productImageSearch states
   const [productImageSearch, setProductImageSearch] = useState(true);
@@ -21,30 +23,28 @@ export default function MainSettings() {
   const [displayCollectionInfo, setDisplayCollectionInfo] = useState(false);
 
   // searchRecommendations states
+  const [hotKeywords, setHotKeywords] = useState(false);
   const [searchRecommendations, setSearchRecommendations] = useState(true);
-  const [customHotKeywords, setCustomHotKeywords] = useState(false);
-  const [customHotCollections, setCustomHotCollections] = useState(false);
-  const [keywordMenu, setKeywordMenu] = useState("main_menu");
-  const [collectionMenu, setCollectionMenu] = useState("main_menu");
+  const [customHotKeywords, setCustomHotKeywords] = useState('');
+  const [showRecentSearches, setShowRecentSearches] = useState(true);
+  
+  const [hotKeywordRecommendations, setHotKeywordRecommendations] = useState('aiKeyRecommendations');
+  const [showCustomKeywordsField, setShowCustomKeywordsField] = useState(false);
+  const [popularImageSearch, setPopularImageSearch] = useState(false);
+
   const [samplingInterval, setSamplingInterval] = useState("7");
-  const [showKeywordRecommendations, setShowKeywordRecommendations] =
-    useState(true);
-  const [showCollectionRecommendations, setShowCollectionRecommendations] =
-    useState(true);
+  useState(true);
 
   // productRecommendation states
-  const [productRecommendationsR, setProductRecommendationsR] = useState(true);
-  const [showImageSearchButtonR, setShowImageSearchButtonR] = useState(true);
-  const [showAddToCartButtonR, setShowAddToCartButtonR] = useState(true);
-  const [displayCollectionInfoR, setDisplayCollectionInfoR] = useState(false);
-  const [cacheTimeR, setCacheTimeR] = useState("1");
 
 
   // settings onject
   const settings = {
     AllSettings: {
       hideOutOfStock: hideOutOfStock,
-      // selectorStyle: selectorStyle,
+      RecommendedImageSearchPerRow: RecommendedImageSearchPerRow,
+      RecommendedImageAspectRatio: RecommendedImageAspectRatio,
+      RecommendedImageBorderRadius: RecommendedImageBorderRadius,
     },
     ProductImageSearch: {
       productImageSearch: productImageSearch,
@@ -55,22 +55,11 @@ export default function MainSettings() {
       showAddToCartButton: showAddToCartButton,
       displayCollectionInfo: displayCollectionInfo,
     },
-    ProductRecommendation: {
-      productRecommendations: productRecommendationsR,
-      showImageSearchButton: showImageSearchButtonR,
-      showAddToCartButton: showAddToCartButtonR,
-      displayCollectionInfo: displayCollectionInfoR,
-      cacheTime: cacheTimeR
-    },
     SearchRecommendationsSettings: {
       searchRecommendations: searchRecommendations,
       customHotKeywords: customHotKeywords,
-      customHotCollections: customHotCollections,
-      keywordMenu: keywordMenu,
-      collectionMenu: collectionMenu,
-      samplingInterval: samplingInterval,
-      showKeywordRecommendations: showKeywordRecommendations,
-      showCollectionRecommendations: showCollectionRecommendations,
+      showRecentSearches: showRecentSearches,
+      recentSearchInterval: samplingInterval,
     }
   }
 
@@ -82,42 +71,27 @@ export default function MainSettings() {
         <AllSettings
           hideOutOfStock={hideOutOfStock}
           setHideOutOfStock={setHideOutOfStock}
-          selectorStyle={selectorStyle}
-          setSelectorStyle={setSelectorStyle}
+          RecommendedImageSearchPerRow={RecommendedImageSearchPerRow}
+          setRecommendedImageSearchPerRow={setRecommendedImageSearchPerRow}
+          RecommendedImageAspectRatio={RecommendedImageAspectRatio}
+          setRecommendedImageAspectRatio={setRecommendedImageAspectRatio}
+          RecommendedImageBorderRadius={RecommendedImageBorderRadius}
+          setRecommendedImageBorderRadius={setRecommendedImageBorderRadius}
         />
         <Divider borderColor="border" borderWidth="050" />
         <SearchRecommendationsSettings
+          hotKeywords={hotKeywords}
+          setHotKeywords={setHotKeywords}
           searchRecommendations={searchRecommendations}
           setSearchRecommendations={setSearchRecommendations}
           customHotKeywords={customHotKeywords}
           setCustomHotKeywords={setCustomHotKeywords}
-          customHotCollections={customHotCollections}
-          setCustomHotCollections={setCustomHotCollections}
-          keywordMenu={keywordMenu}
-          setKeywordMenu={setKeywordMenu}
-          collectionMenu={collectionMenu}
-          setCollectionMenu={setCollectionMenu}
+          showRecentSearches={showRecentSearches}
+          setShowRecentSearches={setShowRecentSearches}
           samplingInterval={samplingInterval}
           setSamplingInterval={setSamplingInterval}
-          showKeywordRecommendations={showKeywordRecommendations}
-          setShowKeywordRecommendations={setShowKeywordRecommendations}
-          showCollectionRecommendations={showCollectionRecommendations}
-          setShowCollectionRecommendations={setShowCollectionRecommendations}
         />
         <Divider borderColor="border" borderWidth="050" />
-        {/* <ProductRecommendation
-          productRecommendations={productRecommendationsR}
-          setProductRecommendations={setProductRecommendationsR}
-          showImageSearchButton={showImageSearchButtonR}
-          setShowImageSearchButton={setShowImageSearchButtonR}
-          showAddToCartButton={showAddToCartButtonR}
-          setShowAddToCartButton={setShowAddToCartButtonR}
-          displayCollectionInfo={displayCollectionInfoR}
-          setDisplayCollectionInfo={setDisplayCollectionInfoR}
-          cacheTime={cacheTimeR}
-          setCacheTime={setCacheTimeR}
-        /> */}
-        {/* <Divider borderColor="border" borderWidth="050" /> */}
         <ProductImageSearch
           productImageSearch={productImageSearch}
           setProductImageSearch={setProductImageSearch}

@@ -9,7 +9,7 @@ import {
   BlockStack,
 } from "@shopify/polaris";
 
-export default function ProductImageSearch({ 
+export default function ProductImageSearch({
   productImageSearch,
   setProductImageSearch,
   dragImageFeature,
@@ -24,41 +24,10 @@ export default function ProductImageSearch({
   setShowAddToCartButton,
   displayCollectionInfo,
   setDisplayCollectionInfo,
- }) {
-  // const [productImageSearch, setProductImageSearch] = useState(true);
-  // const [dragImageFeature, setDragImageFeature] = useState(true);
-  // const [useStandalonePage, setUseStandalonePage] = useState(false);
-  // const [openInNewTab, setOpenInNewTab] = useState(false);
-  // const [showImageSearchButton, setShowImageSearchButton] = useState(true);
-  // const [showAddToCartButton, setShowAddToCartButton] = useState(true);
-  // const [displayCollectionInfo, setDisplayCollectionInfo] = useState(false);
+}) {
 
   const handleProductImageSearchChange = () => {
     setProductImageSearch(!productImageSearch);
-  };
-
-  const handleDragImageFeatureChange = () => {
-    setDragImageFeature(!dragImageFeature);
-  };
-
-  const handleUseStandalonePageChange = () => {
-    setUseStandalonePage(!useStandalonePage);
-  };
-
-  const handleOpenInNewTabChange = () => {
-    setOpenInNewTab(!openInNewTab);
-  };
-
-  const handleShowImageSearchButtonChange = () => {
-    setShowImageSearchButton(!showImageSearchButton);
-  };
-
-  const handleShowAddToCartButtonChange = () => {
-    setShowAddToCartButton(!showAddToCartButton);
-  };
-
-  const handleDisplayCollectionInfoChange = () => {
-    setDisplayCollectionInfo(!displayCollectionInfo);
   };
 
   // Custom toggle switch styles
@@ -136,88 +105,6 @@ export default function ProductImageSearch({
               />
             </InlineStack>
           </Card>
-
-          {/* {productImageSearch && (
-            <>
-              <Card>
-                <BlockStack gap={"400"}>
-                  <InlineStack align="space-between">
-                    <Text variant="bodyMd">
-                      Drag the image onto the website to directly open the
-                      "Image Search" box.
-                    </Text>
-                    <ToggleSwitch
-                      checked={dragImageFeature}
-                      onChange={handleDragImageFeatureChange}
-                    />
-                  </InlineStack>
-
-                  <InlineStack align="space-between">
-                    <Text variant="bodyMd">
-                      Use image search, search results shown on a separate page
-                    </Text>
-                    <ToggleSwitch
-                      checked={useStandalonePage}
-                      onChange={handleUseStandalonePageChange}
-                    />
-                  </InlineStack>
-                  {useStandalonePage && (
-                    <div style={{ marginTop: "8px" }}>
-                      <InlineStack gap="200">
-                        <Text variant="bodyMd" color="subdued">
-                          Image search standalone page: store url + /apps/birse
-                        </Text>
-                        <Link url="#" external>
-                          View
-                        </Link>
-                      </InlineStack>
-                    </div>
-                  )}
-
-                  <InlineStack align="space-between">
-                    <Text variant="bodyMd">
-                      Open product search results in a "New Tab"
-                    </Text>
-                    <ToggleSwitch
-                      checked={openInNewTab}
-                      onChange={handleOpenInNewTabChange}
-                    />
-                  </InlineStack>
-                </BlockStack>
-              </Card>
-
-              <Card>
-                <InlineStack align="space-between">
-                  <Text variant="bodyMd">Show "Image Search" button</Text>
-                  <ToggleSwitch
-                    checked={showImageSearchButton}
-                    onChange={handleShowImageSearchButtonChange}
-                  />
-                </InlineStack>
-                <div style={{ marginTop: "16px" }}>
-                  <InlineStack align="space-between">
-                    <Text variant="bodyMd">Show "Add to Cart" button</Text>
-                    <ToggleSwitch
-                      checked={showAddToCartButton}
-                      onChange={handleShowAddToCartButtonChange}
-                    />
-                  </InlineStack>
-                </div>
-                <div style={{ marginTop: "16px" }}>
-                  <InlineStack align="space-between">
-                    <Text variant="bodyMd">
-                      Display product collection name and image
-                    </Text>
-                    <ToggleSwitch
-                      checked={displayCollectionInfo}
-                      onChange={handleDisplayCollectionInfoChange}
-                    />
-                  </InlineStack>
-                </div>
-              </Card>
-            </>
-          )} */}
-          {/* </LegacyCard> */}
         </BlockStack>
       </Layout.AnnotatedSection>
     </Layout>

@@ -6,10 +6,23 @@ import {
   Select,
   Divider,
   LegacyCard,
+  Card,
+  BlockStack,
+  TextField,
 } from "@shopify/polaris";
 
-export default function AllSettings({hideOutOfStock, setHideOutOfStock, selectorStyle, setSelectorStyle }) {
-
+export default function AllSettings({
+  hideOutOfStock,
+  setHideOutOfStock,
+  selectorStyle,
+  setSelectorStyle,
+  RecommendedImageSearchPerRow,
+  setRecommendedImageSearchPerRow,
+  RecommendedImageAspectRatio,
+  setRecommendedImageAspectRatio,
+  RecommendedImageBorderRadius,
+  setRecommendedImageBorderRadius,
+}) {
   const handleHideOutOfStockChange = () => {
     setHideOutOfStock(!hideOutOfStock);
   };
@@ -61,6 +74,41 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
     },
   };
 
+  // Toggle switch component
+  const ToggleSwitch = ({ checked, onChange }) => (
+    <div style={toggleSwitchStyles.container} onClick={onChange}>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        style={toggleSwitchStyles.input}
+      />
+      <span
+        style={{
+          ...toggleSwitchStyles.slider,
+          backgroundColor: checked ? "#008060" : "#BABFC4",
+        }}
+      >
+        <span
+          style={{
+            ...toggleSwitchStyles.knob,
+            left: checked ? "22px" : "2px",
+          }}
+        ></span>
+      </span>
+    </div>
+  );
+
+  // const [RecommendedImageSearchPerRow, setRecommendedImageSearchPerRow] = useState(6);
+  // const [RecommendedImageAspectRatio, setRecommendedImageAspectRatio] = useState('portrait');
+  // const [RecommendedImageBorderRadius, setRecommendedImageBorderRadius] = useState(4);
+
+  const recommendedImageAspectRatioOptions = [
+    { label: "Portrait", value: "portrait" },
+    { label: "Square", value: "square" },
+    { label: "Landscape", value: "landscape" },
+  ];
+
   return (
     <Layout>
       <Layout.AnnotatedSection
@@ -68,44 +116,80 @@ export default function AllSettings({hideOutOfStock, setHideOutOfStock, selector
         title="All settings"
         description={`Apply to "Product Recommendations", "Product Image Search" and "Search Recommendations."`}
       >
-        <LegacyCard sectioned>
-          <div style={{ paddingBottom: "0px" }}>
-            <InlineStack align="space-between">
+        <BlockStack gap="400">
+          <LegacyCard sectioned>
+            <div style={{ paddingBottom: "0px" }}>
+              <InlineStack align="space-between">
+                <Text as="h3" variant="bodyLg" fontWeight="semibold">
+                  Hide out-of-stock products
+                </Text>
+                <div
+                  style={toggleSwitchStyles.container}
+                  onClick={handleHideOutOfStockChange}
+                >
+                  <input
+                    type="checkbox"
+                    checked={hideOutOfStock}
+                    onChange={handleHideOutOfStockChange}
+                    style={toggleSwitchStyles.input}
+                  />
+                  <span style={toggleSwitchStyles.slider}>
+                    <span style={toggleSwitchStyles.knob}></span>
+                  </span>
+                </div>
+              </InlineStack>
+            </div>
+          </LegacyCard>
+
+          {/* Popualar Image Search */}
+          <Card padding="400">
+            <BlockStack gap="400">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
-                Hide out-of-stock products
+                Recommended Image Search
               </Text>
-              <div
-                style={toggleSwitchStyles.container}
-                onClick={handleHideOutOfStockChange}
-              >
-                <input
-                  type="checkbox"
-                  checked={hideOutOfStock}
-                  onChange={handleHideOutOfStockChange}
-                  style={toggleSwitchStyles.input}
+              <BlockStack gap="200">
+                {/* <InlineStack align="space-between"> */}
+                <Text variant="bodyMd">No. of Images per row</Text>
+                <TextField
+                  type="number"
+                  min={4}
+                  max={12}
+                  label=""
+                  value={RecommendedImageSearchPerRow}
+                  onChange={(value) => setRecommendedImageSearchPerRow(value)}
+                  autoComplete="off"
+                  placeholder="6"
                 />
-                <span style={toggleSwitchStyles.slider}>
-                  <span style={toggleSwitchStyles.knob}></span>
-                </span>
-              </div>
-            </InlineStack>
-          </div>
-          {/* <Divider /> */}
-          {/* <div style={{ paddingTop: "8px" }}>
-            <InlineStack blockAlign="center" align="space-between">
-              <Text as="h3" variant="bodyLg" fontWeight="semibold">
-                Add to cart : subcategory selector style
-              </Text>
-              <Select
-                options={selectorOptions}
-                value={selectorStyle}
-                onChange={handleSelectorStyleChange}
-                labelHidden
-              />
-            </InlineStack>
-          </div> */}
-        </LegacyCard>
+                {/* </InlineStack> */}
+                {/* Image Aspect  Ratio */}
+                {/* <InlineStack align="space-between"> */}
+                <Text variant="bodyMd">Image Aspect Ratio</Text>
+                <Select
+                  options={recommendedImageAspectRatioOptions}
+                  value={RecommendedImageAspectRatio}
+                  onChange={(value) => setRecommendedImageAspectRatio(value)}
+                  label=""
+                />
+                {/* </InlineStack> */}
+                {/* Image Border Radius */}
+                {/* <InlineStack align="space-between"> */}
+                <Text variant="bodyMd">Image Border Radius</Text>
+                <TextField
+                  type="number"
+                  min={0}
+                  max={12}
+                  label=""
+                  value={RecommendedImageBorderRadius}
+                  onChange={(value) => setRecommendedImageBorderRadius(value)}
+                  autoComplete="off"
+                  placeholder="12"
+                />
+                {/* </InlineStack> */}
+              </BlockStack>
+            </BlockStack>
+          </Card>
+        </BlockStack>
       </Layout.AnnotatedSection>
     </Layout>
-  );  
+  );
 }
