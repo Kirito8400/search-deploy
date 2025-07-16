@@ -12,18 +12,6 @@ import {
 export default function ProductImageSearch({
   productImageSearch,
   setProductImageSearch,
-  dragImageFeature,
-  setDragImageFeature,
-  useStandalonePage,
-  setUseStandalonePage,
-  openInNewTab,
-  setOpenInNewTab,
-  showImageSearchButton,
-  setShowImageSearchButton,
-  showAddToCartButton,
-  setShowAddToCartButton,
-  displayCollectionInfo,
-  setDisplayCollectionInfo,
 }) {
 
   const handleProductImageSearchChange = () => {
@@ -86,9 +74,9 @@ export default function ProductImageSearch({
     <Layout>
       <Layout.AnnotatedSection
         id="productImageSearch"
-        title="Float Image Search"
+        title="Popular Image Search"
         description={
-          'Float Image Search is a feature that uses AI to automatically recommend products of the similar style.'
+          'Poplular Image Search is a feature that uses AI to automatically recommend products of the similar style.'
         }
       >
         <BlockStack gap={"400"}>
@@ -97,7 +85,7 @@ export default function ProductImageSearch({
           <Card>
             <InlineStack align="space-between">
               <Text as="h3" variant="bodyLg" fontWeight="semibold">
-                Floating Image Search
+                Popular Image Search
               </Text>
               <ToggleSwitch
                 checked={productImageSearch}

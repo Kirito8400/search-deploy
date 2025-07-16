@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Layout,
   Card,
@@ -6,7 +5,6 @@ import {
   BlockStack,
   InlineStack,
   Select,
-  Checkbox,
   RadioButton,
   TextField,
 } from "@shopify/polaris";
@@ -22,6 +20,12 @@ export default function SearchRecommendationsSettings({
   setShowRecentSearches,
   samplingInterval,
   setSamplingInterval,
+  hotKeywordRecommendations,
+  setHotKeywordRecommendations,
+  showCustomKeywordsField,
+  setShowCustomKeywordsField,
+  popularImageSearch,
+  setPopularImageSearch,
 }) {
 
   const menuOptions = [{ label: "Main menu", value: "main_menu" }];
@@ -93,10 +97,6 @@ export default function SearchRecommendationsSettings({
       </span>
     </div>
   );
-
-  // const [hotKeywordRecommendations, setHotKeywordRecommendations] = useState('aiKeyRecommendations');
-  // const [showCustomKeywordsField, setShowCustomKeywordsField] = useState(false);
-  // const [popularImageSearch, setPopularImageSearch] = useState(false);
 
   const handleHotKeywordRecommendationsChange = useCallback(
     (newValue) => setHotKeywordRecommendations(newValue),

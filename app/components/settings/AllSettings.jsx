@@ -4,7 +4,6 @@ import {
   Text,
   InlineStack,
   Select,
-  Divider,
   LegacyCard,
   Card,
   BlockStack,
@@ -14,7 +13,6 @@ import {
 export default function AllSettings({
   hideOutOfStock,
   setHideOutOfStock,
-  selectorStyle,
   setSelectorStyle,
   RecommendedImageSearchPerRow,
   setRecommendedImageSearchPerRow,
@@ -73,36 +71,6 @@ export default function AllSettings({
       transition: "left 0.2s ease",
     },
   };
-
-  // Toggle switch component
-  const ToggleSwitch = ({ checked, onChange }) => (
-    <div style={toggleSwitchStyles.container} onClick={onChange}>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        style={toggleSwitchStyles.input}
-      />
-      <span
-        style={{
-          ...toggleSwitchStyles.slider,
-          backgroundColor: checked ? "#008060" : "#BABFC4",
-        }}
-      >
-        <span
-          style={{
-            ...toggleSwitchStyles.knob,
-            left: checked ? "22px" : "2px",
-          }}
-        ></span>
-      </span>
-    </div>
-  );
-
-  // const [RecommendedImageSearchPerRow, setRecommendedImageSearchPerRow] = useState(6);
-  // const [RecommendedImageAspectRatio, setRecommendedImageAspectRatio] = useState('portrait');
-  // const [RecommendedImageBorderRadius, setRecommendedImageBorderRadius] = useState(4);
-
   const recommendedImageAspectRatioOptions = [
     { label: "Portrait", value: "portrait" },
     { label: "Square", value: "square" },
