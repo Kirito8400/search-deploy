@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Page, BlockStack, Divider, Toast, Banner, Frame } from "@shopify/polaris";
+import { Page, BlockStack, Divider, Toast, Frame } from "@shopify/polaris";
 import SearchRecommendationsSettings from "../components/settings/SearchRecommendation";
 import AllSettings from "../components/settings/AllSettings";
 import ProductImageSearch from "../components/settings/ProductImageSearch";
@@ -13,6 +13,7 @@ import { useEffect } from "react";
 export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
 
+  // try {
   const response = await admin.graphql(`
     query{
       shop{
@@ -21,11 +22,33 @@ export async function loader({ request }) {
     }
   `)
 
+  const metafields = await admin.graphql(`
+      query GetShopMetafield {
+        shop {
+          metafield(namespace: "vs_settings_namespace", key: "vs_settings_key") {
+            id
+            namespace
+            key
+            value
+          }
+        }
+      }
+    `)
+
   const shopData = await response.json();
   const shopId = shopData.data.shop.id;
+  const metafieldsData = await metafields.json();
+  const metafieldsValue = metafieldsData.data?.shop?.metafield?.value;
 
-  return { shopId };
+  if (metafieldsValue) {
+    return json({ shopId, settings: JSON.parse(metafieldsValue) })
+  }
+  return json({ shopId });
+  // } catch (error) {
+  //   console.log(error);
+  // }
 }
+
 
 export async function action({ request }) {
   const { admin } = await authenticate.admin(request);
@@ -70,7 +93,8 @@ export async function action({ request }) {
 }
 
 export default function MainSettings() {
-  const { shopId } = useLoaderData();
+  const { shopId, settings: metafieldSettings } = useLoaderData();
+  console.log("metafieldSettings", metafieldSettings);
 
   const fetcher = useFetcher(); // Initialize fetcher
   const isSubmitting = fetcher.state === "submitting"; // Check if fetcher is currently submitting
@@ -78,26 +102,24 @@ export default function MainSettings() {
   const [toastActive, setToastActive] = useState(false);
 
   // allSettings states
-  const [hideOutOfStock, setHideOutOfStock] = useState(false);
-  const [RecommendedImageSearchPerRow, setRecommendedImageSearchPerRow] = useState(6);
-  const [RecommendedImageAspectRatio, setRecommendedImageAspectRatio] = useState('portrait');
-  const [RecommendedImageBorderRadius, setRecommendedImageBorderRadius] = useState(4);
+  const [hideOutOfStock, setHideOutOfStock] = useState(metafieldSettings?.AllSettings?.hideOutOfStock || false);
+  const [RecommendedImageSearchPerRow, setRecommendedImageSearchPerRow] = useState(metafieldSettings?.AllSettings?.RecommendedImageSearchPerRow || 6);
+  const [RecommendedImageAspectRatio, setRecommendedImageAspectRatio] = useState(metafieldSettings?.AllSettings?.RecommendedImageAspectRatio || 'portrait');
+  const [RecommendedImageBorderRadius, setRecommendedImageBorderRadius] = useState(metafieldSettings?.AllSettings?.RecommendedImageBorderRadius || 4);
 
 
   // productImageSearch states
-  const [productImageSearch, setProductImageSearch] = useState(true);
+  const [productImageSearch, setProductImageSearch] = useState(metafieldSettings?.ProductImageSearch?.popularImageSearch ?? true);
 
   // searchRecommendations states
-  const [hotKeywords, setHotKeywords] = useState(false);
-  const [searchRecommendations, setSearchRecommendations] = useState(true);
-  const [customHotKeywords, setCustomHotKeywords] = useState('');
-  const [showRecentSearches, setShowRecentSearches] = useState(true);
-
-  const [hotKeywordRecommendations, setHotKeywordRecommendations] = useState('aiKeyRecommendations');
-  const [showCustomKeywordsField, setShowCustomKeywordsField] = useState(false);
-  const [popularImageSearch, setPopularImageSearch] = useState(false);
-
-  const [samplingInterval, setSamplingInterval] = useState("7");
+  const [hotKeywords, setHotKeywords] = useState(metafieldSettings?.SearchRecommendations?.hotKeywords ?? true);
+  const [searchRecommendations, setSearchRecommendations] = useState(metafieldSettings?.SearchRecommendationsSettings?.searchRecommendations ?? true);
+  const [customHotKeywords, setCustomHotKeywords] = useState(metafieldSettings?.SearchRecommendationsSettings?.customHotKeywords ?? '');
+  const [showRecentSearches, setShowRecentSearches] = useState(metafieldSettings?.SearchRecommendationsSettings?.showRecentSearches ?? true);
+  const [hotKeywordRecommendations, setHotKeywordRecommendations] = useState(metafieldSettings?.SearchRecommendationsSettings?.hotKeywordRecommendations ?? 'aiKeyRecommendations');
+  const [showCustomKeywordsField, setShowCustomKeywordsField] = useState(metafieldSettings?.SearchRecommendationsSettings?.showCustomKeywordsField ?? false);
+  const [popularImageSearch, setPopularImageSearch] = useState(metafieldSettings?.SearchRecommendationsSettings?.popularImageSearch ?? false);
+  const [samplingInterval, setSamplingInterval] = useState(metafieldSettings?.SearchRecommendationsSettings?.recentSearchInterval ?? "7");
   useState(true);
 
   // productRecommendation states
@@ -115,6 +137,7 @@ export default function MainSettings() {
       popularImageSearch: productImageSearch,
     },
     SearchRecommendationsSettings: {
+      hotKeywords: hotKeywords,
       searchRecommendations: searchRecommendations,
       customHotKeywords: customHotKeywords,
       showRecentSearches: showRecentSearches,
@@ -144,7 +167,6 @@ export default function MainSettings() {
   return (
     <>
       <Frame>
-        {/* <Banner status="success" title="Settings saved successfully!" /> */}
         <Page title="Settings" primaryAction={{
           content: 'Save',
           onAction: () => fetcher.submit({ shopId, settings: JSON.stringify(settings) }, { method: "post", action: "/app/settings" }), // Use fetcher to submit settings
