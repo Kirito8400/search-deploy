@@ -6,6 +6,9 @@ name = "visual-search-dev"
 application_url = "https://search-deploy.vercel.app/"
 embedded = true
 
+[build]
+automatically_update_urls_on_dev = true
+
 [webhooks]
 api_version = "2025-10"
 
@@ -19,9 +22,6 @@ use_legacy_install_flow = false
 redirect_urls = [ "https://search-deploy.vercel.app/api/auth" ]
 
 [app_proxy]
-url = "https://continental-market-act-rocks.trycloudflare.com/api/"
+url = "https://search-deploy.vercel.app/api/"
 subpath = "api"
 prefix = "apps"
-
-[build]
-automatically_update_urls_on_dev = true

@@ -62,10 +62,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const elements = {
             dynamicSearchResults: clonedSuggestions.querySelector('.vs-sg-dynamic-search-results'),
             dynamicProductsGrid: clonedSuggestions.querySelector('.vs-sg-dynamic-products-grid'),
+            popularImages: clonedSuggestions.querySelectorAll('.vs-sg-product-image img'),
             popularQuery: clonedSuggestions.querySelector('.vs-sg-popular-query'),
             popularProducts: clonedSuggestions.querySelector('.vs-sg-popular-search-products'),
             popularProductsGrid: clonedSuggestions.querySelector('.vs-sg-popular-products-grid'),
-            popularQueryItems: clonedSuggestions.querySelectorAll('.vs-sg-query-item')
+            popularQueryItems: clonedSuggestions.querySelectorAll('.vs-sg-query-item'),
+            recentSearches: clonedSuggestions.querySelectorAll('.vs-sg-query-item.recent-search-item'),
         };
 
         // Set up debounce for search
@@ -76,6 +78,22 @@ document.addEventListener('DOMContentLoaded', function () {
         setupFormSubmitListener(form, searchInput, clonedSuggestions);
         setupPopularProductsListener(elements.popularProductsGrid, form, clonedSuggestions);
         setupPopularQueriesListener(elements.popularQueryItems, searchInput, elements, searchTimeout);
+
+        // Add click handlers to your elements:
+        elements?.popularQueryItems?.forEach(item => {
+            console.log('Adding click handler to popular query:');
+            item.addEventListener('click', () => {
+                trackSearchClick('popular_query', item.textContent);
+            });
+        });
+        // add click handlers to recent searches:
+        elements?.recentSearches?.forEach(item => {
+            console.log('Adding click handler to recent search:');
+            item.addEventListener('click', () => {
+                trackSearchClick('recent_search', item.textContent);
+            });
+        });
+
     }
 
     /**
@@ -156,7 +174,9 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Handle click on popular image
      */
-    function handlePopularImageClick(imageUrl, form, clonedSuggestions) {
+    function handlePopularImageClick(imageUrl, form, clonedSuggestions, imgAlt) {
+        trackSearchClick('popular_product', imgAlt, imgAlt);
+
         const imageSearchModal = form.querySelector('#vs-search-bar-modal');
         const fileInput = imageSearchModal ? imageSearchModal.querySelector('#vs-snp-image-search-file-input') : null;
 
@@ -466,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const img = document.createElement('img');
                 img.src = product.featuredImage.url;
-                img.alt = product.title;
+                img.alt = product.handle;
                 img.loading = 'lazy';
 
                 anchor.appendChild(img);
@@ -475,13 +495,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault(); // Prevent default link navigation
                     const imageUrl = img.src;
+                    const imageAlt = img.alt;
                     if (!imageUrl) return;
 
                     // Find form context
                     const form = this.closest('form[action="/search"]');
                     const clonedSuggestions = this.closest('.vs-sg-search-suggestions-wrapper');
 
-                    handlePopularImageClick(imageUrl, form, clonedSuggestions);
+                    handlePopularImageClick(imageUrl, form, clonedSuggestions, imageAlt);
                 });
 
                 popularGrid.appendChild(anchor);
@@ -642,4 +663,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     // displayRecentSearches();
+
+
+    async function trackSearchClick(type, query, productId = null) {
+        console.log('Tracking click:', type, query, productId);
+        try {
+            await fetch(`${shopUrl}/apps/api/track-search-clicks`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type,
+                    query,
+                    productId,
+                    shopDomain: window.location.hostname
+                })
+            }).then(response => response.json()).then(data => console.log(data)).catch(error => console.error(error));
+        } catch (error) {
+            console.error('Error tracking click:', error);
+        }
+    }
 });

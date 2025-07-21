@@ -793,6 +793,8 @@
 
     // Function to process the image and send to API
     function processImage(file) {
+      trackSearchClick('visual_search', 'image_searched', 'image_searched');
+
       // Reset upload area and show upload area loading spinner (before preview)
       resetUploadArea();
       uploadIcon.style.display = 'none';
@@ -1075,10 +1077,28 @@
 
     // Fetch recommended products on page load
     fetchRecommendedProducts();
-    
+
+    async function trackSearchClick(type, query, productId = null) {
+      console.log('Tracking click:', type, query, productId);
+      try {
+        await fetch(`${shopUrl}/apps/api/track-search-clicks`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type,
+            query,
+            productId,
+            shopDomain: window.location.hostname,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((error) => console.error(error));
+      } catch (error) {
+        console.error('Error tracking click:', error);
+      }
+    }
   });
-
-
 </script>
 
 <!-- Post Image Upload Styling -->

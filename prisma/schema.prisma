@@ -30,3 +30,14 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+
+
+model SearchClick {
+  id         String   @id @default(cuid())
+  type       String
+  query      String
+  productId  String?
+  shopDomain String
+  timestamp  DateTime @default(now())
+}
