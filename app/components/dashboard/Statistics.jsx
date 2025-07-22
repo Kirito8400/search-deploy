@@ -10,16 +10,97 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
-  console.log("countSearchKeywordData", countSearchKeywordData);
-  console.log("countVisualSearchData", countVisualSearchData);
 
-  const [selected, setSelected] = React.useState("lastMonth");
+
+// Helper function to filter data by date range
+const filterDataByDateRange = (data, range) => {
+  const now = new Date();
+  const cutoffDate = new Date(now);
+
+  switch (range) {
+    case "lastWeek":
+      cutoffDate.setDate(now.getDate() - 7);
+      break;
+    case "lastMonth":
+      cutoffDate.setMonth(now.getMonth() - 1);
+      break;
+    case "last3Months":
+      cutoffDate.setMonth(now.getMonth() - 3);
+      break;
+    default:
+      cutoffDate.setMonth(now.getMonth() - 1);
+  }
+
+  return data.filter(item => {
+    const [month, day] = item.date.split('-').map(Number);
+    // Create a date object (using current year since your dates don't include year)
+    const itemDate = new Date(now.getFullYear(), month - 1, day);
+    return itemDate >= cutoffDate;
+  });
+};
+
+// Helper function to convert data to CSV
+const convertToCSV = (keywordData, visualData) => {
+  const headers = "Date,Keyword Clicks,Image Searches,Total Searches\n";
+
+  // Create a map to combine data by date
+  const dataMap = new Map();
+
+  // Process keyword data
+  keywordData.forEach(item => {
+    const clicks = item.recentSearch + item.popularQuery;
+    dataMap.set(item.date, { keywordClicks: clicks, visualSearches: 0 });
+  });
+
+  // Process visual search data
+  visualData.forEach(item => {
+    const existing = dataMap.get(item.date) || { keywordClicks: 0 };
+    dataMap.set(item.date, {
+      ...existing,
+      visualSearches: item.visualSearch
+    });
+  });
+
+  // Convert map to CSV rows
+  let csvRows = headers;
+  Array.from(dataMap.entries()).forEach(([date, data]) => {
+    const total = data.keywordClicks + data.visualSearches;
+    csvRows += `${date},${data.keywordClicks},${data.visualSearches},${total}\n`;
+  });
+
+  return csvRows;
+};
+
+// Helper function to download CSV
+const downloadCSV = (csvData, filename) => {
+  const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
+  const [selectedRange, setSelectedRange] = React.useState("lastMonth");
 
   const handleSelectChange = React.useCallback(
-    (value) => setSelected(value),
+    (value) => setSelectedRange(value),
     [],
   );
+
+  const handleDownload = React.useCallback(() => {
+    const filteredKeywordData = filterDataByDateRange(countSearchKeywordData, selectedRange);
+    const filteredVisualData = filterDataByDateRange(countVisualSearchData, selectedRange);
+    const csvData = convertToCSV(filteredKeywordData, filteredVisualData);
+    const filename = `search-statistics-${new Date().toISOString().slice(0, 10)}.csv`;
+    downloadCSV(csvData, filename);
+  }, [selectedRange, countSearchKeywordData, countVisualSearchData]);
 
   const options = [
     { label: "Last week", value: "lastWeek" },
@@ -27,16 +108,41 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
     { label: "Last 3 months", value: "last3Months" },
   ];
 
+  // Filter data based on selected time range
+  const filteredKeywordData = filterDataByDateRange(countSearchKeywordData, selectedRange);
+  const filteredVisualData = filterDataByDateRange(countVisualSearchData, selectedRange);
+
+  // Calculate date range display text
+  const getDateRangeText = (range) => {
+    const now = new Date();
+    const startDate = new Date(now);
+
+    switch (range) {
+      case "lastWeek":
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case "lastMonth":
+        startDate.setMonth(now.getMonth() - 1);
+        break;
+      case "last3Months":
+        startDate.setMonth(now.getMonth() - 3);
+        break;
+      default:
+        startDate.setMonth(now.getMonth() - 1);
+    }
+
+    return `${startDate.getFullYear()}/${startDate.getMonth() + 1}/${startDate.getDate()} ~ ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+  };
+
   return (
     <BlockStack gap="400">
-      {/* Top navigation */}
       <InlineStack align="space-between" blockAlign="center">
         <InlineStack gap="200" blockAlign="center">
           <Text variant="headingLg" fontWeight="bold" as="h2">
             Statistics
           </Text>
           <Text variant="bodyMd" color="subdued">
-            2025/4/12 ~ 2025/5/12
+            {getDateRangeText(selectedRange)}
           </Text>
         </InlineStack>
 
@@ -44,16 +150,24 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
           <Select
             options={options}
             onChange={handleSelectChange}
-            value={selected}
+            value={selectedRange}
             labelHidden
           />
-          <Button icon={ArrowDownIcon}>Download statistics</Button>
+          <Button icon={ArrowDownIcon} onClick={handleDownload}>
+            Download statistics
+          </Button>
           <Badge>Upgrade</Badge>
         </InlineStack>
       </InlineStack>
 
-      <ProductImageStatistics countSearchKeywordData={countSearchKeywordData} countVisualSearchData={countVisualSearchData} />
-      <SearchPerformance countSearchKeywordData={countSearchKeywordData} countVisualSearchData={countVisualSearchData} />
+      <ProductImageStatistics
+        countSearchKeywordData={filteredKeywordData}
+        countVisualSearchData={filteredVisualData}
+      />
+      <SearchPerformance
+        countSearchKeywordData={filteredKeywordData}
+        countVisualSearchData={filteredVisualData}
+      />
     </BlockStack>
   );
 }
@@ -73,7 +187,7 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
   // Process data
   const keywordData = convertData(countSearchKeywordData);
   const visualData = convertVisualData(countVisualSearchData);
-  
+
   // Calculate totals for display
   const totalKeywordClicks = keywordData.reduce((sum, item) => sum + item.value, 0);
   const totalVisualSearches = visualData.reduce((sum, item) => sum + item.value, 0);
@@ -95,7 +209,7 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
     }
   };
 
-  const getYAxisDomain = (data) => 
+  const getYAxisDomain = (data) =>
     [0, Math.max(...data.map(item => item.value)) + 1];
 
   return (
@@ -109,14 +223,14 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
           <Text variant="headingXl" as="p">
             {totalKeywordClicks}
           </Text>
-          
+
           <div style={{ height: chartProps.height, width: chartProps.width }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={keywordData} margin={chartProps.margin}>
                 <CartesianGrid stroke="#E4E5E7" />
-                <XAxis 
-                  dataKey="date" 
-                  {...chartProps.axisProps} 
+                <XAxis
+                  dataKey="date"
+                  {...chartProps.axisProps}
                 />
                 <YAxis
                   domain={getYAxisDomain(keywordData)}
@@ -143,18 +257,18 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
               <Icon source={InfoIcon} color="base" />
             </Tooltip>
           </InlineStack>
-          
+
           <Text variant="headingXl" as="p">
             {totalVisualSearches}
           </Text>
-          
+
           <div style={{ height: chartProps.height, width: chartProps.width }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={visualData} margin={chartProps.margin}>
                 <CartesianGrid stroke="#E4E5E7" />
-                <XAxis 
-                  dataKey="date" 
-                  {...chartProps.axisProps} 
+                <XAxis
+                  dataKey="date"
+                  {...chartProps.axisProps}
                 />
                 <YAxis
                   domain={getYAxisDomain(visualData)}
