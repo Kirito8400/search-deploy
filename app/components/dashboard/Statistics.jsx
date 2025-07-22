@@ -22,8 +22,8 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
   );
 
   const options = [
-    { label: "Last month", value: "lastMonth" },
     { label: "Last week", value: "lastWeek" },
+    { label: "Last month", value: "lastMonth" },
     { label: "Last 3 months", value: "last3Months" },
   ];
 
@@ -59,70 +59,72 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
 }
 
 export function ProductImageStatistics({ countSearchKeywordData, countVisualSearchData }) {
+  // Data conversion functions
+  const convertData = (input) => input.map(item => ({
+    date: item.date,
+    value: item.recentSearch + item.popularQuery
+  }));
 
-  function convertData(input) {
-    return input.map(item => {
-      return {
-        date: item.date,
-        value: item.recentSearch + item.popularQuery
-      };
-    });
-  }
+  const convertVisualData = (input) => input.map(item => ({
+    date: item.date,
+    value: item.visualSearch
+  }));
 
-  function convertVisualData(input) {
-    return input.map(item => {
-      return {
-        date: item.date,
-        value: item.visualSearch,
-      };
-    });
-  }
+  // Process data
+  const keywordData = convertData(countSearchKeywordData);
+  const visualData = convertVisualData(countVisualSearchData);
+  
+  // Calculate totals for display
+  const totalKeywordClicks = keywordData.reduce((sum, item) => sum + item.value, 0);
+  const totalVisualSearches = visualData.reduce((sum, item) => sum + item.value, 0);
 
-  const convertedData = convertData(countSearchKeywordData);
-  const convertedVisualData = convertVisualData(countVisualSearchData);
-  // console.log("convertedData", convertedData);
-  // console.log("convertedVisualData", convertedVisualData);
+  // Chart configuration
+  const chartProps = {
+    width: "100%",
+    height: 250,
+    margin: { top: 5, right: 5, left: 5, bottom: 5 },
+    lineProps: {
+      type: "monotone",
+      stroke: "#5C6AC4",
+      dot: { fill: "#5C6AC4" },
+      activeDot: { r: 6 }
+    },
+    axisProps: {
+      axisLine: false,
+      tickLine: false
+    }
+  };
 
-  // Sample data - replace with actual data from your API
-  const data = [
-    { date: "04-14", value: 0 },
-    { date: "04-18", value: 1 },
-    { date: "04-22", value: 0 },
-    { date: "04-26", value: 0 },
-    { date: "04-30", value: 0 },
-    { date: "05-04", value: 0 },
-    { date: "05-08", value: 0 },
-    { date: "05-12", value: 0 },
-  ];
+  const getYAxisDomain = (data) => 
+    [0, Math.max(...data.map(item => item.value)) + 1];
 
   return (
     <Grid>
+      {/* Keyword Clicks Card */}
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
         <Card padding="400">
           <Text variant="headingMd" fontWeight="bold" as="h3">
             Search Keyword Clicks
           </Text>
           <Text variant="headingXl" as="p">
-            0
+            {totalKeywordClicks}
           </Text>
-          <div style={{ height: "250px", width: "100%" }}>
+          
+          <div style={{ height: chartProps.height, width: chartProps.width }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={convertedData}>
+              <LineChart data={keywordData} margin={chartProps.margin}>
                 <CartesianGrid stroke="#E4E5E7" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} />
+                <XAxis 
+                  dataKey="date" 
+                  {...chartProps.axisProps} 
+                />
                 <YAxis
-                  domain={Array.from({ length: Math.ceil(Math.max(...convertedData.map(item => item.value)) + 1) }, (_, i) => i)}
-                  axisLine={false}
-                  tickLine={false}
-                  // ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-                  ticks={Array.from({ length: Math.ceil(Math.max(...convertedData.map(item => item.value)) + 1) }, (_, i) => i)}
+                  domain={getYAxisDomain(keywordData)}
+                  {...chartProps.axisProps}
                 />
                 <Line
-                  type="monotone"
                   dataKey="value"
-                  stroke="#5C6AC4"
-                  dot={{ fill: "#5C6AC4" }}
-                  activeDot={{ r: 6 }}
+                  {...chartProps.lineProps}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -130,39 +132,37 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
         </Card>
       </Grid.Cell>
 
+      {/* Image Searches Card */}
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
         <Card padding="400">
-          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <InlineStack align="center" gap="100">
             <Text variant="headingMd" fontWeight="bold" as="h3">
               Image Searches
             </Text>
             <Tooltip content="Number of image searches performed by customers">
-              <span>
-                <Icon source={InfoIcon} color="base" />
-              </span>
+              <Icon source={InfoIcon} color="base" />
             </Tooltip>
-          </div>
+          </InlineStack>
+          
           <Text variant="headingXl" as="p">
-            0
+            {totalVisualSearches}
           </Text>
-          <div style={{ height: "250px", width: "100%" }}>
+          
+          <div style={{ height: chartProps.height, width: chartProps.width }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={convertedVisualData}>
+              <LineChart data={visualData} margin={chartProps.margin}>
                 <CartesianGrid stroke="#E4E5E7" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} />
+                <XAxis 
+                  dataKey="date" 
+                  {...chartProps.axisProps} 
+                />
                 <YAxis
-                  domain={Array.from({ length: Math.ceil(Math.max(...convertedVisualData.map(item => item.value)) + 4) }, (_, i) => i)}
-                  axisLine={false}
-                  tickLine={false}
-                  // ticks={[0, 1, 2, 3, 4]}
-                  ticks={Array.from({ length: Math.ceil(Math.max(...convertedVisualData.map(item => item.value)) + 1) }, (_, i) => i)}
+                  domain={getYAxisDomain(visualData)}
+                  {...chartProps.axisProps}
                 />
                 <Line
-                  type="monotone"
                   dataKey="value"
-                  stroke="#5C6AC4"
-                  dot={{ fill: "#5C6AC4" }}
-                  activeDot={{ r: 6 }}
+                  {...chartProps.lineProps}
                 />
               </LineChart>
             </ResponsiveContainer>
