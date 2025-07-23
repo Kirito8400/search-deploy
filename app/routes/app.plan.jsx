@@ -49,7 +49,6 @@ const plans = [
 
 const Plan = () => {
   const { CurrentPlan, isProMonthly, isProAnnual } = useLoaderData();
-  console.log(CurrentPlan)
   const upgradeFetcher = useFetcher();
   const cancelFetcher = useFetcher();
   
@@ -65,12 +64,10 @@ const Plan = () => {
     {
       id: "monthly",
       content: "Monthly",
-      disabled: isProMonthly || isProAnnual,
     },
     {
       id: "yearly",
       content: "Yearly",
-      disabled: isProMonthly || isProAnnual,
     },
   ];
 
@@ -216,7 +213,10 @@ const Plan = () => {
                             variant="primary"
                             onClick={handleSubscribe(selectedTab === 0 ? "pro_plan" : "pro_plan_annual")}
                             loading={upgradeFetcher.state === "submitting"}
-                            disabled={isProMonthly || isProAnnual}
+                            disabled={
+                              (selectedTab === 0 && isProMonthly) || 
+                              (selectedTab === 1 && isProAnnual)
+                            }
                           >
                             {selectedTab === 0 ? "Upgrade plan" : "Get yearly plan"}
                           </Button>
