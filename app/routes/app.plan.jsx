@@ -1,271 +1,151 @@
-import React from "react";
-import {
-  Page,
-  LegacyCard,
-  Text,
-  Button,
-  InlineStack,
-  BlockStack,
-  Box,
-  Badge,
-} from "@shopify/polaris";
-import { authenticate } from "../shopify.server";
+import { useFetcher } from "@remix-run/react";
+import { Card, Text, Grid, BlockStack, Button, Page, Tabs, Divider, LegacyCard } from "@shopify/polaris";
+import { useState, useCallback } from "react";
 
-export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-  return null;  
-};
+const plans = [
+  {
+    name: "Free",
+    products: "Up to 100 products",
+    keySearches: "Unlimited key searches",
+    imageSearches: "1000 image searches",
+    recommendedProducts: "Available",
+    usage: "Unlimited usage",
+    monthlyPrice: "$0",
+    yearlyPrice: "$0",
+    isCurrent: true,
+  },
+  {
+    name: "Pro",
+    products: "Unlimited products",
+    keySearches: "Unlimited key searches",
+    imageSearches: "Unlimited image searches",
+    recommendedProducts: "Available",
+    usage: "Unlimited usage",
+    monthlyPrice: "$5",
+    yearlyPrice: "$4",
+    isCurrent: false,
+  },
+];
 
-export default function PlanPage() {
-  const plans = [
+const Plan = () => {
+  const upgradeFetcher = useFetcher(); // Rename existing fetcher for clarity
+
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const handleTabChange = useCallback(
+    (selectedTabIndex) => setSelectedTab(selectedTabIndex),
+    []
+  );
+
+  const tabs = [
     {
-      name: "Free",
-      products: "Up to 100 products",
-      usage: "Unlimited usage",
-      monthlyPrice: "$0",
-      yearlyPrice: "$0",
-      isCurrent: true,
+      id: "monthly",
+      content: "Monthly",
     },
     {
-      name: "Lite",
-      products: "Up to 500 products",
-      usage: "Unlimited usage",
-      monthlyPrice: "$5",
-      yearlyPrice: "$4",
-      isCurrent: false,
-    },
-    {
-      name: "Basic",
-      products: "Up to 1,000 products",
-      usage: "Unlimited usage",
-      monthlyPrice: "$20",
-      yearlyPrice: "$16",
-      isCurrent: false,
-      highlight: true,
-    },
-    {
-      name: "Recommended",
-      products: "Up to 5,000 products",
-      usage: "Unlimited usage",
-      monthlyPrice: "$50",
-      yearlyPrice: "$40",
-      isCurrent: false,
-    },
-    {
-      name: "Plus",
-      products: "Up to 10,000 products",
-      usage: "Unlimited usage",
-      monthlyPrice: "$160",
-      yearlyPrice: "$128",
-      isCurrent: false,
+      id: "yearly",
+      content: "Yearly",
     },
   ];
 
+  const handleSubscribe = (plan) => {
+    // upgradeFetcher.submit(
+    //   {
+    //     plan,
+    //     billingType: "monthly",
+    //   },
+    //   { method: "post", action: "/api/upgrade-plan" }
+    // );
+  };
+
   return (
-    <Page title="Subscription Plans">
-      <LegacyCard>
-        <div style={{ overflowX: "auto" }}>
-          <table style={tableStyles.table}>
-            <thead>
-              <tr>
-                <th style={tableStyles.headerCell}>
-                  <Text as="span" variant="headingMd">
-                    Plan
-                  </Text>
-                  <div style={{ marginTop: "4px" }}>
-                    <Text as="span" variant="bodyMd" color="subdued">
-                      14-day free trial
-                    </Text>
-                  </div>
-                </th>
-                <th style={tableStyles.headerCell}>
-                  <Text as="span" variant="headingMd">
-                    Number of products
-                  </Text>
-                </th>
-                <th style={tableStyles.headerCell}>
-                  <Text as="span" variant="headingMd">
-                    Search & recommendations
-                  </Text>
-                </th>
-                <th style={tableStyles.headerCell}>
-                  <div style={{ textAlign: "center" }}>
-                    <Text as="span" variant="headingMd">
-                      Monthly fee
-                    </Text>
-                    <div>
-                      <Text as="span" variant="bodyMd" color="subdued">
-                        (USD)
-                      </Text>
-                    </div>
-                  </div>
-                </th>
-                <th style={tableStyles.headerCell}>
-                  <div style={{ textAlign: "center", position: "relative" }}>
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "-30px",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                      }}
-                    >
-                      <Badge status="success">20% off!</Badge>
-                    </div>
-                    <Text as="span" variant="headingMd">
-                      Every year
-                    </Text>
-                    <div>
-                      <Text as="span" variant="bodyMd" color="subdued">
-                        (USD)
-                      </Text>
-                    </div>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {plans.map((plan, index) => (
-                <tr
-                  key={plan.name}
-                  style={{
-                    ...tableStyles.row,
-                    backgroundColor: plan.isCurrent
-                      ? "rgb(240, 255, 255)"
-                      : plan.highlight
-                      ? "rgb(249, 249, 249)"
-                      : "white",
-                    border: plan.highlight
-                      ? "1px solid rgb(0, 128, 96)"
-                      : undefined,
-                  }}
-                >
-                  <td style={tableStyles.cell}>
-                    <InlineStack gap="200" align="center">
-                      {plan.isCurrent && (
-                        <div style={{ color: "rgb(0, 128, 96)" }}>
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle cx="10" cy="10" r="10" fill="currentColor" />
-                            <path
-                              d="M14 7L8.5 12.5L6 10"
-                              stroke="white"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </div>
-                      )}
-                      <Text
-                        as="span"
-                        variant="headingMd"
-                        fontWeight="semibold"
-                      >
-                        {plan.name}
-                      </Text>
-                    </InlineStack>
-                  </td>
-                  <td style={tableStyles.cell}>
-                    <Text as="span" variant="bodyMd">
-                      {plan.products}
-                    </Text>
-                  </td>
-                  <td style={tableStyles.cell}>
-                    <Text as="span" variant="bodyMd">
-                      {plan.usage}
-                    </Text>
-                  </td>
-                  <td style={tableStyles.cell}>
-                    <BlockStack>
-                      <div style={{ textAlign: "center" }}>
-                        <Text as="span" variant="headingLg" fontWeight="bold">
-                          {plan.monthlyPrice}
-                        </Text>
-                        <Text as="span" variant="bodyMd" color="subdued">
-                          {" "}
-                          /Month
-                        </Text>
-                      </div>
-                      {!plan.isCurrent && (
-                        <div style={{ textAlign: "center", marginTop: "8px" }}>
-                          <Button size="slim">Subscribe</Button>
-                        </div>
-                      )}
-                      {plan.isCurrent && (
-                        <div style={{ textAlign: "center", marginTop: "8px" }}>
-                          <Text as="span" variant="bodyMd" color="success">
-                            Current Plan
-                          </Text>
-                        </div>
-                      )}
-                    </BlockStack>
-                  </td>
-                  <td style={tableStyles.cell}>
-                    <BlockStack>
-                      <div style={{ textAlign: "center" }}>
-                        <Text
-                          as="span"
-                          variant="headingLg"
-                          fontWeight="bold"
-                          color="success"
-                        >
-                          {plan.yearlyPrice}
-                        </Text>
-                        <Text as="span" variant="bodyMd" color="subdued">
-                          {" "}
-                          /Month
-                        </Text>
-                      </div>
-                      {!plan.isCurrent && (
-                        <div style={{ textAlign: "center", marginTop: "8px" }}>
-                          <Button size="slim" primary>
-                            Subscribe
-                          </Button>
-                        </div>
-                      )}
-                      {plan.isCurrent && (
-                        <div style={{ textAlign: "center", marginTop: "8px" }}>
-                          <Text as="span" variant="bodyMd" color="success">
-                            Current Plan
-                          </Text>
-                        </div>
-                      )}
-                    </BlockStack>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <Page title="Plan">
+      <BlockStack align="center" gap="400">
+        <div className="" style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "auto" }}>
+          <LegacyCard>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingLeft: "96px", }}>
+              <Tabs tabs={tabs} selected={selectedTab} onSelect={handleTabChange} />
+            </div>
+          </LegacyCard>
         </div>
-      </LegacyCard>
+
+        {/* </Tabs> */}
+        <Grid>
+          {plans.map((plan) => (
+            <Grid.Cell key={plan.name} columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+              <Card padding="400">
+                <div className="" style={{ minHeight: "400px", display: "flex", flexDirection: "column", padding: "10px" }}>
+                  <BlockStack gap="200">
+                    <div className="" style={{ minHeight: "90px" }}>
+                      <Text variant="headingMd" as="h2">
+                        {plan.name}
+                        {plan.isCurrent && (
+                          <Text variant="bodyMd" as="span" color="success">
+                            {" "}(Current Plan)
+                          </Text>
+                        )}
+                      </Text>
+
+                      <Text variant="heading2xl" as="p">
+                        {selectedTab === 0 ? `${plan.monthlyPrice}` : `${plan.yearlyPrice}`}
+                        {selectedTab === 0 && plan.monthlyPrice !== "$0" && (
+                          <Text variant="bodyMd" as="span" color="subdued">
+                            {/* / month */}
+                          </Text>
+                        )}
+                        <Text variant="bodyMd" as="span" color="subdued">
+                          / month
+                        </Text>
+                      </Text>
+
+                      {plan.monthlyPrice !== "$0" && (
+                        <Text variant="bodyMd" color="subdued">
+                          {selectedTab === 0
+                            ? `Billed monthly (${plan.monthlyPrice})`
+                            : `Billed annually ($${parseInt(plan.yearlyPrice.substring(1)) * 12}) - Save ${Math.round((1 - parseInt(plan.yearlyPrice.substring(1)) / parseInt(plan.monthlyPrice.substring(1))) * 100)}%`}
+                        </Text>
+                      )}
+
+                    </div>
+
+                    <Divider />
+
+                    <div className="" style={{ minHeight: '300px', display: "flex", flexDirection: "column", justifyContent: "space-between", }}>
+                      <BlockStack gap="100">
+                        <Text variant="bodyMd" color="subdued">
+                          Number of Products: {plan.products}
+                        </Text>
+                        <Text variant="bodyMd" color="subdued">
+                          Monthly Keyword Searches: {plan.keySearches}
+                        </Text>
+                        <Text variant="bodyMd" color="subdued">
+                          Monthly Image Searches: {plan.imageSearches}
+                        </Text>
+                        <Text variant="bodyMd" color="subdued">
+                          Show recommended products: {plan.recommendedProducts}
+                        </Text>
+                      </BlockStack>
+
+                      {!plan.isCurrent && plan.monthlyPrice !== "$0" && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center" }}>
+                          <Button fullWidth variant="primary" onClick={handleSubscribe("pro_plan")} >
+                            {selectedTab === 0 ? "Upgrade plan" : "Get yearly plan"}
+                          </Button>
+                          {/* <Text variant="bodyMd" color="subdued">14 days Free trail Available</Text> */}
+                        </div>
+                      )}
+                    </div>
+                  </BlockStack>
+                </div>
+              </Card>
+            </Grid.Cell>
+          ))}
+        </Grid>
+      </BlockStack>
+      <br />
+      <br />
     </Page>
   );
-}
-
-const tableStyles = {
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    borderSpacing: 0,
-  },
-  headerCell: {
-    padding: "16px",
-    textAlign: "left",
-    borderBottom: "1px solid #dfe3e8",
-    backgroundColor: "#f9fafb",
-  },
-  row: {
-    borderBottom: "1px solid #dfe3e8",
-  },
-  cell: {
-    padding: "16px",
-    textAlign: "left",
-    verticalAlign: "middle",
-  },
 };
+
+export default Plan;

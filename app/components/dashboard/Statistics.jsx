@@ -249,7 +249,7 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
       {/* Image Searches Card */}
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
         <Card padding="400">
-          <InlineStack align="center" gap="100">
+          <InlineStack align="start" gap="100">
             <Text variant="headingMd" fontWeight="bold" as="h3">
               Image Searches
             </Text>
@@ -336,7 +336,7 @@ function SearchPerformance({ countSearchKeywordData, countVisualSearchData }) {
           <Grid.Cell columnSpan={{ xs: 4, sm: 4, md: 4, lg: 6, xl: 6 }}>
             <div
               style={{
-                background: "#eee",
+                background: "#fff",
                 border: "1px solid #999",
                 borderRadius: "10px",
                 padding: "8px 12px",
