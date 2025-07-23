@@ -1,20 +1,35 @@
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Parse metafield settings
-    //     const metaField = {{ shop.metafields.vs_settings_namespace.vs_settings_key }};
-    // const settings = typeof metaField === 'string' ? JSON.parse(metaField) : metaField;
+document.addEventListener('DOMContentLoaded', async function () {
+    // New function to fetch settings
+    async function fetchSettings() {
+        try {
+            const shopUrl = window.location.origin; // Assuming shopUrl is defined globally
+            const response = await fetch(`${shopUrl}/apps/api/settings`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const settings = await response.json();
+            console.log('Fetched settings:', settings);
+            return settings;
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+            return null;
+        }
+    }
 
-    // Constants and configuration with metafield overrides
+    const settings = fetchSettings();
+
+    // Constants and configuration with metafield settings overrides
     const CONFIG = {
         searchDelay: 300,
         enableDynamicSearch: true,
-        showPopularQueries: true,
-        showPopularProducts: true,
+        showPopularQueries: settings?.settings?.SearchRecommendationsSettings?.searchRecommendations ?? true,
+        showPopularProducts: settings?.settings?.ProductImageSearch?.popularImageSearch ?? true,
         maxSearchResults: 6,
-        imageAspectRatio: 'portrait',
-        imageBorderRadius: 4,
-        showRecentSearches: true,
-        recentSearchInterval: '7',
+        imageAspectRatio: settings?.settings?.AllSettings?.RecommendedImageAspectRatio ?? 'portrait',
+        imageBorderRadius: settings?.settings?.AllSettings?.RecommendedImageBorderRadius ?? 4,
+        showRecentSearches: settings?.settings?.SearchRecommendationsSettings?.showRecentSearches ?? true,
+        recentSearchInterval: settings?.settings?.SearchRecommendationsSettings?.recentSearchInterval ?? '7',
         placeholderImage: 'https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png'
     };
 
@@ -27,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // DOM Elements
     const suggestionsWrapper = document.querySelector('.vs-sg-search-suggestions-wrapper');
     const searchForms = document.querySelectorAll('header form[action="/search"]');
+
+
 
     if (!suggestionsWrapper || searchForms.length === 0) return;
 
@@ -68,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
             popularProductsGrid: clonedSuggestions.querySelector('.vs-sg-popular-products-grid'),
             popularQueryItems: clonedSuggestions.querySelectorAll('.vs-sg-query-item'),
             recentSearches: clonedSuggestions.querySelectorAll('.vs-sg-query-item.recent-search-item'),
+
+            popularQueryContainer: clonedSuggestions.querySelectorAll('.vs-sg-popular-query'),
         };
 
         // Set up debounce for search
@@ -682,4 +701,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error tracking click:', error);
         }
     }
+
+    
 });

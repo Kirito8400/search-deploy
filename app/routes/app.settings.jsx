@@ -4,7 +4,7 @@ import SearchRecommendationsSettings from "../components/settings/SearchRecommen
 import AllSettings from "../components/settings/AllSettings";
 import ProductImageSearch from "../components/settings/ProductImageSearch";
 import { authenticate } from "../shopify.server"
-import { useActionData, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { useCallback } from "react";
 import { useEffect } from "react";

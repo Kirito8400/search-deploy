@@ -5,6 +5,8 @@ import { authenticate, PRO_ANNUAL_PLAN, PRO_PLAN } from "../shopify.server";
 
 export const loader = async ({ request }) => {
   const { billing } = await authenticate.admin(request);
+
+
   const hasActivePayment = await billing.check({
     plans: [PRO_PLAN, PRO_ANNUAL_PLAN],
     isTest: true,
