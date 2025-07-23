@@ -1,6 +1,19 @@
-import { useFetcher } from "@remix-run/react";
-import { Card, Text, Grid, BlockStack, Button, Page, Tabs, Divider, LegacyCard } from "@shopify/polaris";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Card, Text, Grid, BlockStack, Button, Page, Tabs, Divider, LegacyCard, Banner } from "@shopify/polaris";
 import { useState, useCallback } from "react";
+import { authenticate, PRO_ANNUAL_PLAN, PRO_PLAN } from "../shopify.server";
+
+export const loader = async ({ request }) => {
+  const { billing } = await authenticate.admin(request);
+  const hasActivePayment = await billing.check({
+    plans: [PRO_PLAN, PRO_ANNUAL_PLAN],
+    isTest: true,
+  });
+
+  const CurrentPlan = hasActivePayment?.appSubscriptions[0]?.name || "";
+  // console.log("CurrentPlan", CurrentPlan)
+  return { success: true, CurrentPlan: CurrentPlan };
+};
 
 const plans = [
   {
@@ -28,7 +41,10 @@ const plans = [
 ];
 
 const Plan = () => {
-  const upgradeFetcher = useFetcher(); // Rename existing fetcher for clarity
+  const { CurrentPlan } = useLoaderData();
+  console.log(CurrentPlan)
+
+  const upgradeFetcher = useFetcher();
 
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -48,35 +64,54 @@ const Plan = () => {
     },
   ];
 
-  const handleSubscribe = (plan) => {
-    // upgradeFetcher.submit(
-    //   {
-    //     plan,
-    //     billingType: "monthly",
-    //   },
-    //   { method: "post", action: "/api/upgrade-plan" }
-    // );
-  };
+  const handleSubscribe = useCallback((plan) => {
+    return () => {
+      upgradeFetcher.submit(
+        {
+          plan,
+          billingType: selectedTab === 0 ? "monthly" : "yearly",
+        },
+        { method: "post", action: "/api/upgrade-plan" }
+      );
+    };
+  }, [selectedTab, upgradeFetcher]);
 
   return (
     <Page title="Plan">
+      {CurrentPlan && (
+        <>
+          <Banner
+            title={`You are currently subscribed to the "${CurrentPlan}"`}
+            tone="success"
+          >
+            <Button
+              // onClick={() => handleCancelClick(activePlanMain)}
+              // loading={isCancelling}
+              // disabled={isCancelling}
+              variant="primary"
+            >
+              Cancel Subscription
+            </Button>
+          </Banner>
+          <br />
+        </>
+      )}
       <BlockStack align="center" gap="400">
-        <div className="" style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "auto" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "auto" }}>
           <LegacyCard>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingLeft: "96px", }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingLeft: "96px" }}>
               <Tabs tabs={tabs} selected={selectedTab} onSelect={handleTabChange} />
             </div>
           </LegacyCard>
         </div>
 
-        {/* </Tabs> */}
         <Grid>
           {plans.map((plan) => (
             <Grid.Cell key={plan.name} columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
               <Card padding="400">
-                <div className="" style={{ minHeight: "400px", display: "flex", flexDirection: "column", padding: "10px" }}>
+                <div style={{ minHeight: "400px", display: "flex", flexDirection: "column", padding: "10px" }}>
                   <BlockStack gap="200">
-                    <div className="" style={{ minHeight: "90px" }}>
+                    <div style={{ minHeight: "90px" }}>
                       <Text variant="headingMd" as="h2">
                         {plan.name}
                         {plan.isCurrent && (
@@ -88,11 +123,6 @@ const Plan = () => {
 
                       <Text variant="heading2xl" as="p">
                         {selectedTab === 0 ? `${plan.monthlyPrice}` : `${plan.yearlyPrice}`}
-                        {selectedTab === 0 && plan.monthlyPrice !== "$0" && (
-                          <Text variant="bodyMd" as="span" color="subdued">
-                            {/* / month */}
-                          </Text>
-                        )}
                         <Text variant="bodyMd" as="span" color="subdued">
                           / month
                         </Text>
@@ -105,12 +135,11 @@ const Plan = () => {
                             : `Billed annually ($${parseInt(plan.yearlyPrice.substring(1)) * 12}) - Save ${Math.round((1 - parseInt(plan.yearlyPrice.substring(1)) / parseInt(plan.monthlyPrice.substring(1))) * 100)}%`}
                         </Text>
                       )}
-
                     </div>
 
                     <Divider />
 
-                    <div className="" style={{ minHeight: '300px', display: "flex", flexDirection: "column", justifyContent: "space-between", }}>
+                    <div style={{ minHeight: '300px', display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                       <BlockStack gap="100">
                         <Text variant="bodyMd" color="subdued">
                           Number of Products: {plan.products}
@@ -128,10 +157,15 @@ const Plan = () => {
 
                       {!plan.isCurrent && plan.monthlyPrice !== "$0" && (
                         <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center" }}>
-                          <Button fullWidth variant="primary" onClick={handleSubscribe("pro_plan")} >
+                          <Button
+                            fullWidth
+                            variant="primary"
+                            onClick={handleSubscribe(selectedTab === 0 ? "pro_plan" : "pro_plan_annual")}
+                            loading={upgradeFetcher.state === "submitting"}
+                            disabled={selectedTab === 0 && CurrentPlan === "Monthly subscription" ? selectedTab === 1 && CurrentPlan === "Annual subscription" : false}
+                          >
                             {selectedTab === 0 ? "Upgrade plan" : "Get yearly plan"}
                           </Button>
-                          {/* <Text variant="bodyMd" color="subdued">14 days Free trail Available</Text> */}
                         </div>
                       )}
                     </div>

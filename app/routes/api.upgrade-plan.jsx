@@ -9,14 +9,14 @@ export const action = async ({ request }) => {
     const { billing, session } = await authenticate.admin(request);
     const shop = session.shop.replace(".myshopify.com", "");
     // Fix: Add error handling and default value for appHandle
-    const appHandle = "visual-search-dev"
+    const appHandle = "visual-search-dev-partners-old"
 
     console.log("appHandle:", appHandle);
 
     const formData = await request.formData();
     const plan = formData.get("plan");
 
-    const returnUrl = `https://admin.shopify.com/store/${shop}/apps/${appHandle}/app/subscription-manage`; //   const returnUrl = `https://admin.shopify.com/store/athatake/apps/checkout-deploy-2/app`;
+    const returnUrl = `https://admin.shopify.com/store/${shop}/apps/${appHandle}/app/plan`; //   const returnUrl = `https://admin.shopify.com/store/athatake/apps/checkout-deploy-2/app`;
 
     console.log("Form Data:", plan);
 

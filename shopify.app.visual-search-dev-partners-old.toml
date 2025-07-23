@@ -1,0 +1,23 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "9894b2c8badff35d71529263db41fc5e"
+name = "visual-search-dev-partners-old"
+handle = "visual-search-dev-partners-old"
+application_url = "https://scroll-davis-calvin-flyer.trycloudflare.com"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+
+[webhooks]
+api_version = "2025-07"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_themes,write_products"
+
+[auth]
+redirect_urls = ["https://scroll-davis-calvin-flyer.trycloudflare.com/auth/callback", "https://scroll-davis-calvin-flyer.trycloudflare.com/auth/shopify/callback", "https://scroll-davis-calvin-flyer.trycloudflare.com/api/auth/callback"]
+
+[pos]
+embedded = false

@@ -20,13 +20,13 @@ const shopify = shopifyApp({
   appUrl: process.env.SHOPIFY_APP_URL || "",
   billing: {
     [PRO_PLAN]: {
-      amount: 0.00,
+      amount: 4.99,
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
       test: true,
     },
     [PRO_ANNUAL_PLAN]: {
-      amount: 19.99,
+      amount: 48.99,
       currencyCode: 'USD',
       interval: BillingInterval.Annual,
       trialDays: 7, // 7 days free trial
