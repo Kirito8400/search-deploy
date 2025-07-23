@@ -23,13 +23,14 @@ const shopify = shopifyApp({
       amount: 4.99,
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
+      trialDays: 14, // 14 days free trial
       test: true,
     },
     [PRO_ANNUAL_PLAN]: {
       amount: 48.99,
       currencyCode: 'USD',
       interval: BillingInterval.Annual,
-      trialDays: 7, // 7 days free trial
+      trialDays: 14, // 14 days free trial
       test: true,
     },
   },

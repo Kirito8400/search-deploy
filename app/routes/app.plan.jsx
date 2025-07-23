@@ -1,5 +1,5 @@
 import { useFetcher, useLoaderData } from "@remix-run/react";
-import { Card, Text, Grid, BlockStack, Button, Page, Tabs, Divider, LegacyCard, Banner } from "@shopify/polaris";
+import { Card, Text, Grid, BlockStack, Button, Page, Tabs, Divider, LegacyCard, Banner, Modal } from "@shopify/polaris";
 import { useState, useCallback } from "react";
 import { authenticate, PRO_ANNUAL_PLAN, PRO_PLAN } from "../shopify.server";
 
@@ -11,8 +11,15 @@ export const loader = async ({ request }) => {
   });
 
   const CurrentPlan = hasActivePayment?.appSubscriptions[0]?.name || "";
-  // console.log("CurrentPlan", CurrentPlan)
-  return { success: true, CurrentPlan: CurrentPlan };
+  const isProMonthly = CurrentPlan === "Monthly subscription";
+  const isProAnnual = CurrentPlan === "Annual subscription";
+  
+  return { 
+    success: true, 
+    CurrentPlan,
+    isProMonthly,
+    isProAnnual
+  };
 };
 
 const plans = [
@@ -41,12 +48,13 @@ const plans = [
 ];
 
 const Plan = () => {
-  const { CurrentPlan } = useLoaderData();
+  const { CurrentPlan, isProMonthly, isProAnnual } = useLoaderData();
   console.log(CurrentPlan)
-
   const upgradeFetcher = useFetcher();
-
-  const [selectedTab, setSelectedTab] = useState(0);
+  const cancelFetcher = useFetcher();
+  
+  const [selectedTab, setSelectedTab] = useState(isProAnnual ? 1 : 0);
+  const [activeModal, setActiveModal] = useState(false);
 
   const handleTabChange = useCallback(
     (selectedTabIndex) => setSelectedTab(selectedTabIndex),
@@ -57,10 +65,12 @@ const Plan = () => {
     {
       id: "monthly",
       content: "Monthly",
+      disabled: isProMonthly || isProAnnual,
     },
     {
       id: "yearly",
       content: "Yearly",
+      disabled: isProMonthly || isProAnnual,
     },
   ];
 
@@ -76,6 +86,24 @@ const Plan = () => {
     };
   }, [selectedTab, upgradeFetcher]);
 
+  const handleCancel = useCallback(() => {
+    const plan = selectedTab === 0 ? "pro_plan" : "pro_plan_annual";
+    const billingType = selectedTab === 0 ? "monthly" : "yearly";
+    
+    cancelFetcher.submit(
+      {
+        plan,
+        billingType,
+      },
+      { method: "post", action: "/api/cancel-plan" }
+    );
+    setActiveModal(false);
+  }, [selectedTab, cancelFetcher]);
+
+  const handleCancelClick = useCallback(() => {
+    setActiveModal(true);
+  }, []);
+
   return (
     <Page title="Plan">
       {CurrentPlan && (
@@ -85,9 +113,9 @@ const Plan = () => {
             tone="success"
           >
             <Button
-              // onClick={() => handleCancelClick(activePlanMain)}
-              // loading={isCancelling}
-              // disabled={isCancelling}
+              onClick={handleCancelClick}
+              loading={cancelFetcher.state === "submitting"}
+              disabled={cancelFetcher.state === "submitting"}
               variant="primary"
             >
               Cancel Subscription
@@ -96,6 +124,32 @@ const Plan = () => {
           <br />
         </>
       )}
+      
+      <Modal
+        open={activeModal}
+        onClose={() => setActiveModal(false)}
+        title="Cancel Subscription"
+        primaryAction={{
+          content: 'Confirm Cancel',
+          destructive: true,
+          onAction: handleCancel,
+          loading: cancelFetcher.state === "submitting",
+        }}
+        secondaryActions={[
+          {
+            content: 'Back',
+            onAction: () => setActiveModal(false),
+          },
+        ]}
+      >
+        <Modal.Section>
+          <Text variant="bodyMd">
+            Are you sure you want to cancel your subscription? 
+            You'll lose access to Pro features at the end of your billing period.
+          </Text>
+        </Modal.Section>
+      </Modal>
+
       <BlockStack align="center" gap="400">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "auto" }}>
           <LegacyCard>
@@ -162,7 +216,7 @@ const Plan = () => {
                             variant="primary"
                             onClick={handleSubscribe(selectedTab === 0 ? "pro_plan" : "pro_plan_annual")}
                             loading={upgradeFetcher.state === "submitting"}
-                            disabled={selectedTab === 0 && CurrentPlan === "Monthly subscription" ? selectedTab === 1 && CurrentPlan === "Annual subscription" : false}
+                            disabled={isProMonthly || isProAnnual}
                           >
                             {selectedTab === 0 ? "Upgrade plan" : "Get yearly plan"}
                           </Button>
