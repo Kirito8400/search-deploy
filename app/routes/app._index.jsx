@@ -1,51 +1,82 @@
-import React, { useState } from "react";
-import { BlockStack, Button, Card, Grid, Page, Text } from "@shopify/polaris";
+import { BlockStack, Page } from "@shopify/polaris";
 import { WelcomeCard } from "../components/dashboard/WelcomeCard";
-import {
-  CurrentPlan,
-  ProductStatus,
-  ReviewSection,
-} from "../components/dashboard/CurrentPlan";
+import { CurrentPlan } from "../components/dashboard/CurrentPlan";
 import { Statistics } from "../components/dashboard/Statistics";
 import { authenticate } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 import prisma from "../db.server";
+import {
+  extractThemeId,
+  fetchShopThemes,
+  findLiveTheme,
+} from "../utils/shopThemes";
+import { fetchBillingStatus } from "../utils/fetchBillingStatus";
+import { checkAppEmbed } from "../utils/checkAppEmbed";
 
-// import { format, parseISO } from 'date-fns';
-
+function extractShopName(shopDomain) {
+  return shopDomain.replace(".myshopify.com", "");
+}
 
 export async function loader({ request }) {
-  const { admin, session } = await authenticate.admin(request); // Your Shopify Admin API client
-  const response = await admin.graphql(
-    `query{
-      themes(first: 10) {
-        edges {
-          node { 
-            id
-            name
-            role
-          }
-        }
+  try {
+    // Authenticate and get admin/session
+    const { admin, session } = await authenticate.admin(request);
+
+    // Fetch shop themes
+    const themes = await fetchShopThemes(admin);
+    const liveTheme = findLiveTheme(themes);
+    const liveThemeId = extractThemeId(liveTheme?.node?.id);
+
+    // check app embed
+    const isEmbedded = await checkAppEmbed(admin);
+
+    // Check is plan upgraded
+    const billingStatus = await fetchBillingStatus(request);
+    const isPlanUpgraded = billingStatus?.CurrentPlan || "";
+
+    // Fetch search tracking data
+    const searchTrackResponse = await prisma.searchClick.findMany(
+      {
+        where: {
+          shopDomain: session.shop,
+        },
       }
-    }`
-  );
+    );
 
-  const searchTrackResponse = await prisma.searchClick.findMany();
+    // Process shop name
+    const shopName = extractShopName(session.shop);
 
-  const responseShopData = await response.json();
-
-  const liveTheme = responseShopData?.data?.themes.edges.find(theme => theme.node.role === "MAIN");
-  const shopName = session.shop.replace(".myshopify.com", "");
-  const liveThemeId = liveTheme?.node?.id.replace("gid://shopify/OnlineStoreTheme/", "");
-
-  return { liveThemeId: liveThemeId, shopName: shopName, searchTrackResponse: searchTrackResponse };
+    return {
+      liveThemeId,
+      shopName,
+      searchTrackResponse,
+      isEmbedded,
+      isPlanUpgraded,
+      billingStatus,
+    };
+  } catch (error) {
+    console.error("Error in loader function:", error);
+    throw error; // Or handle it appropriately for your use case
+  }
 }
 
 export default function Dashboard() {
-  const { liveThemeId, shopName, searchTrackResponse } = useLoaderData();
+  const {
+    liveThemeId,
+    shopName,
+    searchTrackResponse,
+    isEmbedded,
+    isPlanUpgraded,
+    billingStatus,
+  } = useLoaderData();
+
+  console.log(billingStatus);
 
   const redirectToThemeEditor = () => {
-    window.open(`https://${shopName}.myshopify.com/admin/themes/${liveThemeId}/editor`, '_blank');
+    window.open(
+      `https://${shopName}.myshopify.com/admin/themes/${liveThemeId}/editor?context=apps`,
+      "_blank",
+    );
   };
 
   function countSearchKeyword(searchTrackResponse) {
@@ -57,10 +88,10 @@ export default function Dashboard() {
     // Find the most recent date in the data
     let latestDate = null;
 
-    searchTrackResponse.forEach(item => {
+    searchTrackResponse.forEach((item) => {
       const dateObj = new Date(item.timestamp);
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObj.getDate()).padStart(2, "0");
       const dateKey = `${month}-${day}`;
 
       // Track latest date
@@ -69,10 +100,12 @@ export default function Dashboard() {
       }
 
       // Count by type
-      if (item.type === 'recent_search') {
+      if (item.type === "recent_search") {
         recentSearchCounts[dateKey] = (recentSearchCounts[dateKey] || 0) + 1;
-      }
-      else if (item.type === 'popular_query' || item.type === 'popular_product') {
+      } else if (
+        item.type === "popular_query" ||
+        item.type === "popular_product"
+      ) {
         popularQueryCounts[dateKey] = (popularQueryCounts[dateKey] || 0) + 1;
       }
     });
@@ -95,15 +128,15 @@ export default function Dashboard() {
     const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      const day = String(currentDate.getDate()).padStart(2, '0');
+      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+      const day = String(currentDate.getDate()).padStart(2, "0");
       const dateKey = `${month}-${day}`;
 
       result.push({
         date: dateKey,
         // visualSearch: visualSearchCounts[dateKey] || 0,
         recentSearch: recentSearchCounts[dateKey] || 0,
-        popularQuery: popularQueryCounts[dateKey] || 0
+        popularQuery: popularQueryCounts[dateKey] || 0,
       });
 
       // Move to next day
@@ -120,10 +153,10 @@ export default function Dashboard() {
     // Find the most recent date in the data
     let latestDate = null;
 
-    searchTrackResponse.forEach(item => {
+    searchTrackResponse.forEach((item) => {
       const dateObj = new Date(item.timestamp);
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObj.getDate()).padStart(2, "0");
       const dateKey = `${month}-${day}`;
 
       // Track latest date
@@ -136,7 +169,7 @@ export default function Dashboard() {
       //   popularQueryCounts[dateKey] = (popularQueryCounts[dateKey] || 0) + 1;
       // }
 
-      if (item.type === 'visual_search') {
+      if (item.type === "visual_search") {
         visualSearchCounts[dateKey] = (visualSearchCounts[dateKey] || 0) + 1;
       }
     });
@@ -159,8 +192,8 @@ export default function Dashboard() {
     const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      const day = String(currentDate.getDate()).padStart(2, '0');
+      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+      const day = String(currentDate.getDate()).padStart(2, "0");
       const dateKey = `${month}-${day}`;
 
       result.push({
@@ -180,15 +213,22 @@ export default function Dashboard() {
   // count visual search
   const countVisualSearchData = countVisualSearch(searchTrackResponse);
 
-
-
   return (
     <Page title="Dashboard">
       <BlockStack gap="400">
-        <WelcomeCard redirectToThemeEditor={redirectToThemeEditor} />
-        <CurrentPlan />
-        <ReviewSection />
-        <Statistics searchTrackResponse={searchTrackResponse} countSearchKeywordData={countSearchKeywordData} countVisualSearchData={countVisualSearchData} />
+        <WelcomeCard
+          redirectToThemeEditor={redirectToThemeEditor}
+          isEmbeddedApp={isEmbedded}
+          isPlanUpgraded={billingStatus?.CurrentPlan}
+        />
+        <CurrentPlan billingStatus={billingStatus} />
+        {/* <ReviewSection /> */}
+        <Statistics
+          searchTrackResponse={searchTrackResponse}
+          countSearchKeywordData={countSearchKeywordData}
+          countVisualSearchData={countVisualSearchData}
+          billingStatus={billingStatus}
+        />
       </BlockStack>
       <br />
       <br />

@@ -1,5 +1,12 @@
 import { authenticate } from "../shopify.server";
 import { json } from "@remix-run/node";
+import prisma from "../db.server";
+
+// Constants for search limits
+const VISUAL_SEARCH_LIMITS = {
+  DAILY: 100,
+  MONTHLY: 1000,
+};
 
 export const action = async ({ request }) => {
   console.log("Proxy hits");
@@ -12,12 +19,62 @@ export const action = async ({ request }) => {
 
   const formData = await request.formData();
   const imageFile = formData.get("image");
+  const shopDomain = formData.get("shopDomain") || "";
 
   if (!imageFile) {
     return json({ error: "No image provided" });
   }
 
   try {
+
+    // Check if search limit exceed
+    const now = new Date();
+    const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Get today's visual search count
+    const dailyCount = await prisma.searchClick.count({
+      where: {
+        type: "visual_search",
+        shopDomain,
+        timestamp: { gte: startOfDay },
+      },
+    });
+
+    // Get this month's visual search count
+    const monthlyCount = await prisma.searchClick.count({
+      where: {
+        type: "visual_search",
+        shopDomain,
+        timestamp: { gte: startOfMonth },
+      },
+    });
+
+    // Check if limits exceeded
+    if (dailyCount >= VISUAL_SEARCH_LIMITS.DAILY) {
+      return json(
+        {
+          success: false,
+          error: "Daily visual search limit exceeded",
+          limit: VISUAL_SEARCH_LIMITS.DAILY,
+          currentCount: dailyCount,
+        },
+        { status: 429 },
+      );
+    }
+
+    if (monthlyCount >= VISUAL_SEARCH_LIMITS.MONTHLY) {
+      return json(
+        {
+          success: false,
+          error: "Monthly visual search limit exceeded",
+          limit: VISUAL_SEARCH_LIMITS.MONTHLY,
+          currentCount: monthlyCount,
+        },
+        { status: 429 },
+      );
+    }
+
     // Convert the file to base64 for API transmission
     const buffer = await imageFile.arrayBuffer();
     const base64Image = Buffer.from(buffer).toString("base64");
@@ -109,7 +166,7 @@ async function extractImageFeatures(base64Image) {
   );
 
   const result = await response.json();
-  console.log("Vision API result:", result);
+  // console.log("Vision API result:", result);
 
   // Extract the relevant data from the response
   try {

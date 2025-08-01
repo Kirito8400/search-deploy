@@ -1,41 +1,105 @@
 import { json } from "@remix-run/node";
 import prisma from "../db.server";
-import { authenticate } from '../shopify.server';
+import { authenticate } from "../shopify.server";
+import { fetchBillingStatus } from "../utils/fetchBillingStatus";
 
-// Received data: {
-// 17:24:38 │                     remix │   type: 'visual_search',
-// 17:24:38 │                     remix │   query: 'image_searched',
-// 17:24:38 │                     remix │   productId: 'image_searched',
-// 17:24:38 │                     remix │   shopDomain: 'lathe-base.myshopify.com'
-// 17:24:38 │                     remix │ }
-// Received data: {
-// 17:25:59 │                     remix │   type: 'popular_query',
-// 17:25:59 │                     remix │   query: 'yep',
-// 17:25:59 │                     remix │   productId: null,
-// 17:25:59 │                     remix │   shopDomain: 'lathe-base.myshopify.com'
-// 17:25:59 │                     remix │ }
 export async function action({ request }) {
-    const { session } = await authenticate.public.appProxy(request);
-    if (!session) {
-        return json({ error: "No session found" });
-    }
-    const data = await request.json();
-    try {
-        console.log("Received data:", data);
+  const { session } = await authenticate.public.appProxy(request);
+  if (!session) {
+    return json({ error: "No session found" }, { status: 401 });
+  }
 
-        await prisma.searchClick.create({
-            data: {
-                type: data.type, // 'visual_search', 'popular_query', or 'recent_query'
-                query: data.query,
-                productId: null,
-                shopDomain: data.shopDomain,
-                timestamp: new Date()
-            }
-        });
+  const data = await request.json();
+  const { type, query, shopDomain } = data;
 
-        return json({ success: true }, { status: 200 });
-    } catch (error) {
-        console.error("Error tracking search click:", error);
-        return json({ success: false }, { status: 500 });
+  // Check is plan upgraded
+  // Constants for search limits
+  let VISUAL_SEARCH_LIMITS = {
+    DAILY: 100,
+    MONTHLY: 1000,
+  };
+  
+  //   const billingStatus = await fetchBillingStatus(request);
+  //   const isPlanUpgraded = billingStatus?.CurrentPlan || "";
+  //   console.log("isPlanUpgraded", isPlanUpgraded);
+  //   if (isPlanUpgraded === "") {
+  //     VISUAL_SEARCH_LIMITS = {
+  //       DAILY: 300,
+  //       MONTHLY: 10000,
+  //     };
+  //   }
+
+  try {
+    // Only check limits for visual searches
+    if (type === "visual_search") {
+      const now = new Date();
+      const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      // Get today's visual search count
+      const dailyCount = await prisma.searchClick.count({
+        where: {
+          type: "visual_search",
+          shopDomain,
+          timestamp: { gte: startOfDay },
+        },
+      });
+
+      // Get this month's visual search count
+      const monthlyCount = await prisma.searchClick.count({
+        where: {
+          type: "visual_search",
+          shopDomain,
+          timestamp: { gte: startOfMonth },
+        },
+      });
+
+      // Check if limits exceeded
+      if (dailyCount >= VISUAL_SEARCH_LIMITS.DAILY) {
+        return json(
+          {
+            success: false,
+            error: "Daily visual search limit exceeded",
+            limit: VISUAL_SEARCH_LIMITS.DAILY,
+            currentCount: dailyCount,
+          },
+          { status: 429 },
+        );
+      }
+
+      if (monthlyCount >= VISUAL_SEARCH_LIMITS.MONTHLY) {
+        return json(
+          {
+            success: false,
+            error: "Monthly visual search limit exceeded",
+            limit: VISUAL_SEARCH_LIMITS.MONTHLY,
+            currentCount: monthlyCount,
+          },
+          { status: 429 },
+        );
+      }
     }
+
+    // Record the search
+    await prisma.searchClick.create({
+      data: {
+        type,
+        query,
+        productId: data.productId || null,
+        shopDomain,
+        timestamp: new Date(),
+      },
+    });
+
+    return json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Error tracking search click:", error);
+    return json(
+      {
+        success: false,
+        error: "Internal server error",
+      },
+      { status: 500 },
+    );
+  }
 }

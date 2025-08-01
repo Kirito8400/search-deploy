@@ -3,12 +3,8 @@
 client_id = "9894b2c8badff35d71529263db41fc5e"
 name = "visual-search-dev-partners-old"
 handle = "visual-search-dev-partners-old"
-application_url = "https://diverse-identification-moving-further.trycloudflare.com"
+application_url = "https://astronomy-bryant-parents-count.trycloudflare.com"
 embedded = true
-
-[build]
-include_config_on_deploy = true
-automatically_update_urls_on_dev = true
 
 [webhooks]
 api_version = "2025-07"
@@ -18,7 +14,16 @@ api_version = "2025-07"
 scopes = "read_themes,write_products"
 
 [auth]
-redirect_urls = ["https://diverse-identification-moving-further.trycloudflare.com/auth/callback", "https://diverse-identification-moving-further.trycloudflare.com/auth/shopify/callback", "https://diverse-identification-moving-further.trycloudflare.com/api/auth/callback"]
+redirect_urls = ["https://astronomy-bryant-parents-count.trycloudflare.com/auth/callback", "https://astronomy-bryant-parents-count.trycloudflare.com/auth/shopify/callback", "https://astronomy-bryant-parents-count.trycloudflare.com/api/auth/callback"]
+
+[app_proxy]
+url = "https://astronomy-bryant-parents-count.trycloudflare.com/api"
+subpath = "api"
+prefix = "apps"
 
 [pos]
 embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true

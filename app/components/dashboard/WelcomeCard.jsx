@@ -1,16 +1,28 @@
-import React, { useState } from "react";
-import { Button, Card, Page, Text } from "@shopify/polaris";
-import { CheckCircleIcon } from "@shopify/polaris-icons";
+import { useEffect, useState } from "react";
+import { Button, Card, Text } from "@shopify/polaris";
 
-export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
+export function WelcomeCard({
+  redirectToThemeEditor,
+  redirectToPlan,
+  // isEmbeddedApp,
+  isPlanUpgraded,
+}) {
   const [openStep, setOpenStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState(1);
 
+  const isEmbeddedApp = false;
+
+  useEffect(() => {
+    if (isPlanUpgraded !== "") {
+      setCompletedSteps(2);
+    }
+    if (isPlanUpgraded !== "" && isEmbeddedApp) {
+      setCompletedSteps(3);
+    }
+  }, [isEmbeddedApp, isPlanUpgraded]);
+
   const toggleStep = (step) => {
     setOpenStep(step);
-    // if (step > completedSteps) {
-    //   setCompletedSteps(step);
-    // }
   };
 
   // Calculate progress percentage
@@ -22,13 +34,13 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
         {/* Header Section */}
         <div>
           <Text variant="headingMd" fontWeight="bold">
-            Welcome to BIRSE: Visual Search !
+            Welcome to AI Search: Visual Search !
           </Text>
 
           <p style={{ margin: "6px 0" }}>
             Please complete the following steps to configure the application. If
             you need help, please check{" "}
-            <a href="#" style={{ textDecoration: "none" }}>
+            <a href="/app/help" style={{ textDecoration: "none" }}>
               help
             </a>{" "}
             or contact us:
@@ -98,7 +110,32 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
               }}
             >
               {completedSteps >= 0 ? (
-                <div style={{ width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center', }} bis_size="{&quot;x&quot;:40,&quot;y&quot;:188,&quot;w&quot;:20,&quot;h&quot;:20,&quot;abs_x&quot;:280,&quot;abs_y&quot;:300}"><svg viewBox="0 0 20 20" width="30" bis_size="{&quot;x&quot;:40,&quot;y&quot;:188,&quot;w&quot;:20,&quot;h&quot;:20,&quot;abs_x&quot;:280,&quot;abs_y&quot;:300}"><path d="M13.28 9.03a.75.75 0 0 0-1.06-1.06l-2.97 2.97-1.22-1.22a.75.75 0 0 0-1.06 1.06l1.75 1.75a.75.75 0 0 0 1.06 0l3.5-3.5Z" bis_size="{&quot;x&quot;:46,&quot;y&quot;:195,&quot;w&quot;:6,&quot;h&quot;:4,&quot;abs_x&quot;:286,&quot;abs_y&quot;:307}"></path><path fill-rule="evenodd" d="M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Zm-1.5 0a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z" bis_size="{&quot;x&quot;:43,&quot;y&quot;:191,&quot;w&quot;:14,&quot;h&quot;:14,&quot;abs_x&quot;:283,&quot;abs_y&quot;:303}"></path></svg></div>
+                <div
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  bis_size='{"x":40,"y":188,"w":20,"h":20,"abs_x":280,"abs_y":300}'
+                >
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="30"
+                    bis_size='{"x":40,"y":188,"w":20,"h":20,"abs_x":280,"abs_y":300}'
+                  >
+                    <path
+                      d="M13.28 9.03a.75.75 0 0 0-1.06-1.06l-2.97 2.97-1.22-1.22a.75.75 0 0 0-1.06 1.06l1.75 1.75a.75.75 0 0 0 1.06 0l3.5-3.5Z"
+                      bis_size='{"x":46,"y":195,"w":6,"h":4,"abs_x":286,"abs_y":307}'
+                    ></path>
+                    <path
+                      fill-rule="evenodd"
+                      d="M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Zm-1.5 0a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z"
+                      bis_size='{"x":43,"y":191,"w":14,"h":14,"abs_x":283,"abs_y":303}'
+                    ></path>
+                  </svg>
+                </div>
               ) : (
                 <div
                   class="_unfinished-circle_y0zy0_246"
@@ -112,9 +149,7 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
                 ></div>
               )}
             </div>
-            <Text variant="headingSm">
-              Step 1: App Installed Successfully
-            </Text>
+            <Text variant="headingSm">Step 1: App Installed Successfully</Text>
           </div>
 
           {openStep === 1 && (
@@ -127,8 +162,8 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
               }}
             >
               <p>
-                Thanks for installing our app! We're excited to help you get
-                the most out of your store.
+                Thanks for installing our app! We're excited to help you get the
+                most out of your store.
               </p>
             </div>
           )}
@@ -155,25 +190,48 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
                 justifyContent: "center",
               }}
             >
-              {/* {completedSteps >= 1 ? ( */}
-              <div
-                class="_unfinished-circle_y0zy0_246"
-                bis_size='{"x":211,"y":352,"w":20,"h":20,"abs_x":451,"abs_y":464}'
-                style={{
-                  border: "2px dashed #616161",
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                }}
-              ></div>
-              {/* ) : (
-                <CheckCircleIcon />
-              )} */}
+              {completedSteps && isEmbeddedApp >= 1 ? (
+                <div
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  bis_size='{"x":40,"y":188,"w":20,"h":20,"abs_x":280,"abs_y":300}'
+                >
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="30"
+                    bis_size='{"x":40,"y":188,"w":20,"h":20,"abs_x":280,"abs_y":300}'
+                  >
+                    <path
+                      d="M13.28 9.03a.75.75 0 0 0-1.06-1.06l-2.97 2.97-1.22-1.22a.75.75 0 0 0-1.06 1.06l1.75 1.75a.75.75 0 0 0 1.06 0l3.5-3.5Z"
+                      bis_size='{"x":46,"y":195,"w":6,"h":4,"abs_x":286,"abs_y":307}'
+                    ></path>
+                    <path
+                      fill-rule="evenodd"
+                      d="M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Zm-1.5 0a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z"
+                      bis_size='{"x":43,"y":191,"w":14,"h":14,"abs_x":283,"abs_y":303}'
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                <div
+                  class="_unfinished-circle_y0zy0_246"
+                  bis_size='{"x":211,"y":352,"w":20,"h":20,"abs_x":451,"abs_y":464}'
+                  style={{
+                    border: "2px dashed #616161",
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                  }}
+                ></div>
+              )}
             </div>
 
-            <Text variant="headingSm">
-              Step 2: Enable the Apps Embed
-            </Text>
+            <Text variant="headingSm">Step 2: Enable the Apps Embed</Text>
           </div>
 
           {openStep === 2 && (
@@ -204,7 +262,9 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
                       Enable Image Search Bar Icon
                     </Text>
                     <div>
-                      <Button variant="primary" onClick={redirectToThemeEditor}>Open theme editor</Button>
+                      <Button variant="primary" onClick={redirectToThemeEditor}>
+                        Open theme editor
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -246,22 +306,49 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
                 justifyContent: "center",
               }}
             >
-              {/* {completedSteps >= 2 ? ( */}
-              <div
-                class="_unfinished-circle_y0zy0_246"
-                bis_size='{"x":211,"y":352,"w":20,"h":20,"abs_x":451,"abs_y":464}'
-                style={{
-                  border: "2px dashed #616161",
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                }}
-              ></div>
-              {/* ) : (
-                <CheckCircleIcon />
-              )} */}
+              {completedSteps >= 2 ? (
+                <div
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  bis_size='{"x":40,"y":188,"w":20,"h":20,"abs_x":280,"abs_y":300}'
+                >
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="30"
+                    bis_size='{"x":40,"y":188,"w":20,"h":20,"abs_x":280,"abs_y":300}'
+                  >
+                    <path
+                      d="M13.28 9.03a.75.75 0 0 0-1.06-1.06l-2.97 2.97-1.22-1.22a.75.75 0 0 0-1.06 1.06l1.75 1.75a.75.75 0 0 0 1.06 0l3.5-3.5Z"
+                      bis_size='{"x":46,"y":195,"w":6,"h":4,"abs_x":286,"abs_y":307}'
+                    ></path>
+                    <path
+                      fill-rule="evenodd"
+                      d="M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Zm-1.5 0a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z"
+                      bis_size='{"x":43,"y":191,"w":14,"h":14,"abs_x":283,"abs_y":303}'
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                <div
+                  class="_unfinished-circle_y0zy0_246"
+                  bis_size='{"x":211,"y":352,"w":20,"h":20,"abs_x":451,"abs_y":464}'
+                  style={{
+                    border: "2px dashed #616161",
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                  }}
+                ></div>
+              )}
             </div>
-            <Text variant="headingSm">Step : Upgrade to get Limitless Features</Text>
+            <Text variant="headingSm">
+              Step : Upgrade to get Limitless Features
+            </Text>
           </div>
 
           {openStep === 3 && (
@@ -281,7 +368,9 @@ export function WelcomeCard({ redirectToThemeEditor, redirectToPlan }) {
               </Text>
 
               <div style={{ marginTop: "10px" }}>
-                <Button variant="primary" url="/app/plan">Choose a plan</Button>
+                <Button variant="primary" url="/app/plan">
+                  Choose a plan
+                </Button>
               </div>
             </div>
           )}

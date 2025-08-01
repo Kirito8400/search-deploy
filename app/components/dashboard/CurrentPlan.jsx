@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Text,
@@ -10,7 +10,18 @@ import {
 } from "@shopify/polaris";
 import { XIcon } from "@shopify/polaris-icons";
 
-export function CurrentPlan() {
+export function CurrentPlan({ billingStatus }) {
+  const [noOfProducts, setNoOfProducts] = useState(100);
+
+  useEffect(() => {
+    if (billingStatus?.isProMonthly) {
+      setNoOfProducts(1000);
+    } else if (billingStatus?.isProAnnual) {
+      setNoOfProducts("Unlimited");
+    }
+  }, [billingStatus]);
+
+
   return (
     <Card>
       <BlockStack gap="200">
@@ -21,9 +32,16 @@ export function CurrentPlan() {
             </Text>
             <InlineStack gap="200" align="center" wrap={false}>
               <Text variant="bodyMd" as="p">
-                Free
+                {billingStatus?.isProMonthly
+                  ? "Pro Monthly"
+                  : billingStatus?.isProAnnual
+                    ? "Pro Annual"
+                    : "Free"}
               </Text>
-              <Badge size="slim">Upgrade</Badge>
+              {!billingStatus?.isProMonthly ||
+                (!billingStatus?.isProAnnual && (
+                  <Badge size="slim">Upgrade</Badge>
+                ))}
             </InlineStack>
           </InlineStack>
         </div>
@@ -39,10 +57,12 @@ export function CurrentPlan() {
 
         <InlineStack align="space-between" blockAlign="center" wrap={false}>
           <Text variant="bodyMd" as="p" fontWeight="semibold">
-            Number of Ai Visual Searches
+            Number of Products
           </Text>
           <Text variant="bodyMd" as="p">
-            Up to 200 searches
+            {noOfProducts === "Unlimited"
+              ? "Unlimited products"
+              : `Up to ${noOfProducts} products`}
           </Text>
         </InlineStack>
       </BlockStack>
@@ -53,14 +73,15 @@ export function CurrentPlan() {
 export function ProductStatus() {
   const resourcePicker = () => {
     shopify.resourcePicker({
-      type: 'product', filter: {
+      type: "product",
+      filter: {
         hidden: false,
         variants: false,
         draft: false,
         archived: false,
       },
-    })
-  }
+    });
+  };
   return (
     <Card>
       <BlockStack gap="200">

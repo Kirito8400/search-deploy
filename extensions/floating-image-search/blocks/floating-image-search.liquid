@@ -298,7 +298,7 @@
     });
 
     // Function to process the image and send to API
-    function processImage(file) {
+    async function processImage(file) {
       // Counting file uploads
       trackSearchClick('visual_search', 'image_searched', 'image_searched');
 
@@ -343,8 +343,9 @@
       // Create form data
       const formData = new FormData();
       formData.append('image', file);
+      formData.append('shopDomain', window.location.hostname);
 
-      console.log('formData', formData);
+      // console.log('formData', formData);
 
       // Show main loading indicator while fetching (optional, can rely on preview loader)
       // loadingElement.style.display = 'block';
@@ -592,7 +593,7 @@
     async function trackSearchClick(type, query, productId = null) {
       console.log('Tracking click:', type, query, productId);
       try {
-        await fetch(`${shopUrl}/apps/api/track-search-clicks`, {
+          await fetch(`${shopUrl}/apps/api/track-search-clicks`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -603,8 +604,11 @@
           }),
         })
           .then((response) => response.json())
-          .then((data) => console.log(data))
+          .then((data) => {
+            console.log(data);
+          })
           .catch((error) => console.error(error));
+
       } catch (error) {
         console.error('Error tracking click:', error);
       }

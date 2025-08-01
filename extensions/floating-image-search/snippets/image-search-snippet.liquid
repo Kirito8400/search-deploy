@@ -836,6 +836,7 @@
       // Create form data
       const formData = new FormData();
       formData.append('image', file);
+      formData.append('shopDomain', window.location.hostname);
 
       console.log('formData', formData);
 

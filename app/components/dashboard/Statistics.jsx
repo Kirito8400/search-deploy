@@ -1,5 +1,16 @@
 import React from "react";
-import { Card, Text, Grid, Icon, Tooltip, BlockStack, InlineStack, Select, Badge, Button } from "@shopify/polaris";
+import {
+  Card,
+  Text,
+  Grid,
+  Icon,
+  Tooltip,
+  BlockStack,
+  InlineStack,
+  Select,
+  Badge,
+  Button,
+} from "@shopify/polaris";
 import { ArrowDownIcon, InfoIcon } from "@shopify/polaris-icons";
 import {
   LineChart,
@@ -9,8 +20,6 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-
-
 
 // Helper function to filter data by date range
 const filterDataByDateRange = (data, range) => {
@@ -31,8 +40,8 @@ const filterDataByDateRange = (data, range) => {
       cutoffDate.setMonth(now.getMonth() - 1);
   }
 
-  return data.filter(item => {
-    const [month, day] = item.date.split('-').map(Number);
+  return data.filter((item) => {
+    const [month, day] = item.date.split("-").map(Number);
     // Create a date object (using current year since your dates don't include year)
     const itemDate = new Date(now.getFullYear(), month - 1, day);
     return itemDate >= cutoffDate;
@@ -47,17 +56,17 @@ const convertToCSV = (keywordData, visualData) => {
   const dataMap = new Map();
 
   // Process keyword data
-  keywordData.forEach(item => {
+  keywordData.forEach((item) => {
     const clicks = item.recentSearch + item.popularQuery;
     dataMap.set(item.date, { keywordClicks: clicks, visualSearches: 0 });
   });
 
   // Process visual search data
-  visualData.forEach(item => {
+  visualData.forEach((item) => {
     const existing = dataMap.get(item.date) || { keywordClicks: 0 };
     dataMap.set(item.date, {
       ...existing,
-      visualSearches: item.visualSearch
+      visualSearches: item.visualSearch,
     });
   });
 
@@ -73,20 +82,24 @@ const convertToCSV = (keywordData, visualData) => {
 
 // Helper function to download CSV
 const downloadCSV = (csvData, filename) => {
-  const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
+  const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
 
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
 
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
 };
 
-export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
+export function Statistics({
+  countSearchKeywordData,
+  countVisualSearchData,
+  billingStatus,
+}) {
   const [selectedRange, setSelectedRange] = React.useState("lastMonth");
 
   const handleSelectChange = React.useCallback(
@@ -95,8 +108,14 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
   );
 
   const handleDownload = React.useCallback(() => {
-    const filteredKeywordData = filterDataByDateRange(countSearchKeywordData, selectedRange);
-    const filteredVisualData = filterDataByDateRange(countVisualSearchData, selectedRange);
+    const filteredKeywordData = filterDataByDateRange(
+      countSearchKeywordData,
+      selectedRange,
+    );
+    const filteredVisualData = filterDataByDateRange(
+      countVisualSearchData,
+      selectedRange,
+    );
     const csvData = convertToCSV(filteredKeywordData, filteredVisualData);
     const filename = `search-statistics-${new Date().toISOString().slice(0, 10)}.csv`;
     downloadCSV(csvData, filename);
@@ -109,8 +128,14 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
   ];
 
   // Filter data based on selected time range
-  const filteredKeywordData = filterDataByDateRange(countSearchKeywordData, selectedRange);
-  const filteredVisualData = filterDataByDateRange(countVisualSearchData, selectedRange);
+  const filteredKeywordData = filterDataByDateRange(
+    countSearchKeywordData,
+    selectedRange,
+  );
+  const filteredVisualData = filterDataByDateRange(
+    countVisualSearchData,
+    selectedRange,
+  );
 
   // Calculate date range display text
   const getDateRangeText = (range) => {
@@ -156,7 +181,8 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
           <Button icon={ArrowDownIcon} onClick={handleDownload}>
             Download statistics
           </Button>
-          <Badge>Upgrade</Badge>
+          {!billingStatus?.isProMonthly ||
+            (!billingStatus?.isProAnnual && <Badge size="slim">Upgrade</Badge>)}
         </InlineStack>
       </InlineStack>
 
@@ -172,25 +198,36 @@ export function Statistics({ countSearchKeywordData, countVisualSearchData }) {
   );
 }
 
-export function ProductImageStatistics({ countSearchKeywordData, countVisualSearchData }) {
+export function ProductImageStatistics({
+  countSearchKeywordData,
+  countVisualSearchData,
+}) {
   // Data conversion functions
-  const convertData = (input) => input.map(item => ({
-    date: item.date,
-    value: item.recentSearch + item.popularQuery
-  }));
+  const convertData = (input) =>
+    input.map((item) => ({
+      date: item.date,
+      value: item.recentSearch + item.popularQuery,
+    }));
 
-  const convertVisualData = (input) => input.map(item => ({
-    date: item.date,
-    value: item.visualSearch
-  }));
+  const convertVisualData = (input) =>
+    input.map((item) => ({
+      date: item.date,
+      value: item.visualSearch,
+    }));
 
   // Process data
   const keywordData = convertData(countSearchKeywordData);
   const visualData = convertVisualData(countVisualSearchData);
 
   // Calculate totals for display
-  const totalKeywordClicks = keywordData.reduce((sum, item) => sum + item.value, 0);
-  const totalVisualSearches = visualData.reduce((sum, item) => sum + item.value, 0);
+  const totalKeywordClicks = keywordData.reduce(
+    (sum, item) => sum + item.value,
+    0,
+  );
+  const totalVisualSearches = visualData.reduce(
+    (sum, item) => sum + item.value,
+    0,
+  );
 
   // Chart configuration
   const chartProps = {
@@ -201,16 +238,18 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
       type: "monotone",
       stroke: "#5C6AC4",
       dot: { fill: "#5C6AC4" },
-      activeDot: { r: 6 }
+      activeDot: { r: 6 },
     },
     axisProps: {
       axisLine: false,
-      tickLine: false
-    }
+      tickLine: false,
+    },
   };
 
-  const getYAxisDomain = (data) =>
-    [0, Math.max(...data.map(item => item.value)) + 1];
+  const getYAxisDomain = (data) => [
+    0,
+    Math.max(...data.map((item) => item.value)) + 1,
+  ];
 
   return (
     <Grid>
@@ -228,18 +267,12 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={keywordData} margin={chartProps.margin}>
                 <CartesianGrid stroke="#E4E5E7" />
-                <XAxis
-                  dataKey="date"
-                  {...chartProps.axisProps}
-                />
+                <XAxis dataKey="date" {...chartProps.axisProps} />
                 <YAxis
                   domain={getYAxisDomain(keywordData)}
                   {...chartProps.axisProps}
                 />
-                <Line
-                  dataKey="value"
-                  {...chartProps.lineProps}
-                />
+                <Line dataKey="value" {...chartProps.lineProps} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -266,18 +299,12 @@ export function ProductImageStatistics({ countSearchKeywordData, countVisualSear
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={visualData} margin={chartProps.margin}>
                 <CartesianGrid stroke="#E4E5E7" />
-                <XAxis
-                  dataKey="date"
-                  {...chartProps.axisProps}
-                />
+                <XAxis dataKey="date" {...chartProps.axisProps} />
                 <YAxis
                   domain={getYAxisDomain(visualData)}
                   {...chartProps.axisProps}
                 />
-                <Line
-                  dataKey="value"
-                  {...chartProps.lineProps}
-                />
+                <Line dataKey="value" {...chartProps.lineProps} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -294,32 +321,43 @@ function SearchPerformance({ countSearchKeywordData, countVisualSearchData }) {
     const performanceMap = new Map();
 
     // Process keyword data
-    keywordData.forEach(item => {
+    keywordData.forEach((item) => {
       const total = item.recentSearch + item.popularQuery;
-      performanceMap.set(item.date, (performanceMap.get(item.date) || 0) + total);
+      performanceMap.set(
+        item.date,
+        (performanceMap.get(item.date) || 0) + total,
+      );
     });
 
     // Process visual search data
-    visualData.forEach(item => {
-      performanceMap.set(item.date, (performanceMap.get(item.date) || 0) + item.visualSearch);
+    visualData.forEach((item) => {
+      performanceMap.set(
+        item.date,
+        (performanceMap.get(item.date) || 0) + item.visualSearch,
+      );
     });
 
     // Convert map to array of objects
     return Array.from(performanceMap.entries()).map(([date, value]) => ({
       date,
-      value
+      value,
     }));
   }
 
-  const searchData = convertSearchPerformanceData(countSearchKeywordData, countVisualSearchData);
+  const searchData = convertSearchPerformanceData(
+    countSearchKeywordData,
+    countVisualSearchData,
+  );
 
   // Calculate totals for the summary cards
   const totalKeywordClicks = countSearchKeywordData.reduce(
-    (sum, item) => sum + item.recentSearch + item.popularQuery, 0
+    (sum, item) => sum + item.recentSearch + item.popularQuery,
+    0,
   );
 
   const totalVisualClicks = countVisualSearchData.reduce(
-    (sum, item) => sum + item.visualSearch, 0
+    (sum, item) => sum + item.visualSearch,
+    0,
   );
 
   // For demonstration - you might want to get actual product click data from props
@@ -425,7 +463,7 @@ function SearchPerformance({ countSearchKeywordData, countVisualSearchData }) {
               <CartesianGrid stroke="#E4E5E7" />
               <XAxis dataKey="date" axisLine={false} tickLine={false} />
               <YAxis
-                domain={[0, 'dataMax + 1']}
+                domain={[0, "dataMax + 1"]}
                 axisLine={false}
                 tickLine={false}
               />
